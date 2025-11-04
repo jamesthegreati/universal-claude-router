@@ -60,9 +60,17 @@ echo ""
 
 # Run tests
 echo -e "${YELLOW}Running tests...${NC}"
-npm run test || {
-  echo -e "${YELLOW}Warning: Tests failed or not available. Continuing...${NC}"
-}
+if ! npm run test; then
+  echo -e "${RED}Tests failed!${NC}"
+  read -p "Do you want to proceed with publishing despite test failures? (yes/no): " PROCEED
+  if [ "$PROCEED" != "yes" ]; then
+    echo -e "${RED}Publish cancelled due to test failures.${NC}"
+    exit 1
+  fi
+  echo -e "${YELLOW}Proceeding with publish despite test failures...${NC}"
+else
+  echo -e "${GREEN}✓ Tests passed${NC}"
+fi
 echo ""
 
 # Create a dry-run package to verify contents

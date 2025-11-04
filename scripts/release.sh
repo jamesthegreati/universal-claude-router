@@ -38,14 +38,11 @@ echo ""
 
 # Ask for version bump type
 echo -e "${YELLOW}Select version bump type:${NC}"
-echo "  1) patch  (bug fixes: $CURRENT_VERSION -> $(npm version patch --no-git-tag-version -w 2>&1 | grep -o '[0-9]*\.[0-9]*\.[0-9]*' || echo '?.?.?') then revert)"
-echo "  2) minor  (new features: $CURRENT_VERSION -> $(npm version minor --no-git-tag-version -w 2>&1 | grep -o '[0-9]*\.[0-9]*\.[0-9]*' || echo '?.?.?') then revert)"
-echo "  3) major  (breaking changes: $CURRENT_VERSION -> $(npm version major --no-git-tag-version -w 2>&1 | grep -o '[0-9]*\.[0-9]*\.[0-9]*' || echo '?.?.?') then revert)"
+echo "  1) patch  (bug fixes)"
+echo "  2) minor  (new features)"
+echo "  3) major  (breaking changes)"
 echo "  4) custom (specify exact version)"
 echo ""
-
-# Revert any changes made by the version preview commands
-git checkout package.json package-lock.json 2>/dev/null || true
 
 read -p "Enter choice (1-4): " CHOICE
 
@@ -117,7 +114,8 @@ fi
 
 echo ""
 echo -e "${YELLOW}Pushing to remote...${NC}"
-git push origin main
+CURRENT_BRANCH=$(git branch --show-current)
+git push origin "$CURRENT_BRANCH"
 git push origin "$TAG_NAME"
 
 echo ""
