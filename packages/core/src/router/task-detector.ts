@@ -1,4 +1,5 @@
-import type { ClaudeCodeRequest, TaskType } from '@ucr/shared';
+import { TaskType } from '@ucr/shared';
+import type { ClaudeCodeRequest } from '@ucr/shared';
 
 /**
  * Detect task type from request
@@ -10,7 +11,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     .find((m) => m.role === 'user');
 
   if (!lastMessage) {
-    return 'default' as TaskType;
+    return TaskType.DEFAULT;
   }
 
   const content =
@@ -27,7 +28,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     Array.isArray(lastMessage.content) &&
     lastMessage.content.some((part) => part.type === 'image')
   ) {
-    return 'image' as TaskType;
+    return TaskType.IMAGE;
   }
 
   // Check for web search indicators
@@ -42,7 +43,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     'web search',
   ];
   if (webSearchKeywords.some((keyword) => contentLower.includes(keyword))) {
-    return 'webSearch' as TaskType;
+    return TaskType.WEB_SEARCH;
   }
 
   // Check for background task indicators
@@ -54,7 +55,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     'batch process',
   ];
   if (backgroundKeywords.some((keyword) => contentLower.includes(keyword))) {
-    return 'background' as TaskType;
+    return TaskType.BACKGROUND;
   }
 
   // Check for thinking/reasoning indicators
@@ -69,7 +70,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     'chain of thought',
   ];
   if (thinkKeywords.some((keyword) => contentLower.includes(keyword))) {
-    return 'think' as TaskType;
+    return TaskType.THINK;
   }
 
   // Check message length for long context
@@ -86,24 +87,24 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
   // If combined message length is very large, it's a long context task
   if (totalLength > 50000) {
     // ~12.5k tokens
-    return 'longContext' as TaskType;
+    return TaskType.LONG_CONTEXT;
   }
 
-  return 'default' as TaskType;
+  return TaskType.DEFAULT;
 }
 
 /**
  * Get task priority (higher number = higher priority)
  */
 export function getTaskPriority(taskType: TaskType): number {
-  const priorities: Record<TaskType, number> = {
-    default: 5,
-    think: 4,
-    image: 3,
-    webSearch: 2,
-    longContext: 1,
-    background: 0,
+  const priorities: Record<string, number> = {
+    [TaskType.DEFAULT]: 5,
+    [TaskType.THINK]: 4,
+    [TaskType.IMAGE]: 3,
+    [TaskType.WEB_SEARCH]: 2,
+    [TaskType.LONG_CONTEXT]: 1,
+    [TaskType.BACKGROUND]: 0,
   };
 
-  return priorities[taskType] || 5;
+  return priorities[taskType] ?? 5;
 }
