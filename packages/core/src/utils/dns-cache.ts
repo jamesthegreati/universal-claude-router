@@ -16,6 +16,7 @@ export class DNSCache {
 
   /**
    * Resolve hostname to IP address with caching
+   * Note: DNS lookup failures throw errors in production for security
    */
   async resolve(hostname: string): Promise<string> {
     let ip = this.cache.get(hostname);
@@ -26,8 +27,11 @@ export class DNSCache {
         ip = result.address;
         this.cache.set(hostname, ip);
       } catch (error) {
-        // If DNS lookup fails, return hostname as-is
-        return hostname;
+        // In production, DNS failures should be treated as errors
+        // Returning hostname could expose internal names or enable cache poisoning
+        throw new Error(
+          `DNS lookup failed for ${hostname}: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     }
 

@@ -51,7 +51,7 @@ export class StartupOptimizer {
    * Non-critical initialization deferred to after server starts
    */
   private deferNonCriticalInit(config: UCRConfig): void {
-    setImmediate(async () => {
+    const asyncInit = async () => {
       const logger = getLogger();
 
       try {
@@ -79,6 +79,16 @@ export class StartupOptimizer {
           error: error instanceof Error ? error.message : String(error),
         });
       }
+    };
+
+    // Use setImmediate and handle promise rejections properly
+    setImmediate(() => {
+      asyncInit().catch((error) => {
+        getLogger().error({
+          type: 'deferred_init_failed',
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
     });
   }
 

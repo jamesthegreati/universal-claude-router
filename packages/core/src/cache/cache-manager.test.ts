@@ -69,6 +69,6 @@ describe('generateCacheKey', () => {
 
   it('should generate hex string keys', () => {
     const key = generateCacheKey({ test: 'data' });
-    expect(key).toMatch(/^[a-f0-9]{64}$/);
+    expect(key).toMatch(/^[a-f0-9]{32}$/); // MD5 produces 32 character hex strings
   });
 });

@@ -26,6 +26,7 @@ export class ResponseCache {
 
   /**
    * Generate cache key from request
+   * Uses MD5 for better performance (cache keys don't need cryptographic security)
    */
   private getCacheKey(request: ClaudeCodeRequest): string {
     const key = {
@@ -34,7 +35,7 @@ export class ResponseCache {
       temperature: request.temperature,
       max_tokens: request.max_tokens,
     };
-    return createHash('sha256').update(JSON.stringify(key)).digest('hex');
+    return createHash('md5').update(JSON.stringify(key)).digest('hex');
   }
 
   /**

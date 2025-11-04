@@ -85,6 +85,7 @@ export class MemoryMonitor {
 
   /**
    * Trigger garbage collection if available
+   * Note: Only triggers once as multiple GC calls provide no additional benefit
    */
   private triggerGC(): void {
     if (global.gc) {

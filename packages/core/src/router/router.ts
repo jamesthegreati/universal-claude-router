@@ -39,11 +39,9 @@ export class Router {
       }
     }
 
-    // Run task detection and token counting in parallel
-    const [taskType, tokenCount] = await Promise.all([
-      Promise.resolve(detectTaskType(request)),
-      Promise.resolve(countRequestTokens(request)),
-    ]);
+    // Run task detection and token counting synchronously (both are fast)
+    const taskType = detectTaskType(request);
+    const tokenCount = countRequestTokens(request);
 
     logger.debug({
       type: 'routing',

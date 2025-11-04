@@ -97,7 +97,8 @@ export const cacheManager = new MultiLayerCache();
 
 /**
  * Generate cache key from any object
+ * Uses MD5 for better performance (cache keys don't need cryptographic security)
  */
 export function generateCacheKey(obj: any): string {
-  return createHash('sha256').update(JSON.stringify(obj)).digest('hex');
+  return createHash('md5').update(JSON.stringify(obj)).digest('hex');
 }

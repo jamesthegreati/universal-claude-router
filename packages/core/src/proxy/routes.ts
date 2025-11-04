@@ -163,8 +163,15 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       return claudeResponse;
     } catch (error) {
       const duration = Date.now() - startTime;
-      const claudeRequest = request.body as ClaudeCodeRequest;
-      metrics.recordRequest(duration, cacheHit, claudeRequest?.stream || false, true);
+      // Safely access stream property with proper error handling
+      let isStreaming = false;
+      try {
+        const claudeRequest = request.body as ClaudeCodeRequest;
+        isStreaming = claudeRequest?.stream || false;
+      } catch (parseError) {
+        // Ignore parsing errors, default to non-streaming
+      }
+      metrics.recordRequest(duration, cacheHit, isStreaming, true);
       logger.error({
         type: 'request_failed',
         requestId,

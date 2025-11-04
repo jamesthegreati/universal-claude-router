@@ -87,6 +87,14 @@ async function main() {
   console.log('Universal Claude Router - Performance Benchmarks');
   console.log('================================================\n');
 
+  // Check if dist directory exists
+  try {
+    await import('../packages/core/dist/cache/cache-manager.js');
+  } catch (error) {
+    console.error('\nError: Project not built. Please run "npm run build" first.\n');
+    process.exit(1);
+  }
+
   // Benchmark 1: Cache key generation
   const { generateCacheKey } = await import('../packages/core/dist/cache/cache-manager.js');
   const result1 = await benchmark('Cache Key Generation', () => {

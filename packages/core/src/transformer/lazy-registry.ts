@@ -58,7 +58,19 @@ export class LazyTransformerRegistry {
     try {
       const module = await loader();
       // Handle both default and named exports
-      const TransformerClass = 'default' in module ? module.default : Object.values(module)[0];
+      let TransformerClass;
+      if ('default' in module) {
+        TransformerClass = module.default;
+      } else {
+        // For named exports, look for class names ending in 'Transformer'
+        const exportNames = Object.keys(module);
+        const transformerExport = exportNames.find((name) => name.endsWith('Transformer'));
+        if (transformerExport) {
+          TransformerClass = (module as any)[transformerExport];
+        } else {
+          throw new Error(`No transformer class found in module for ${provider}`);
+        }
+      }
       const transformer = new TransformerClass();
       this.transformers.set(provider, transformer);
       return transformer;
