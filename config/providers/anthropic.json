@@ -1,0 +1,20 @@
+{
+  "id": "anthropic",
+  "name": "Anthropic Claude",
+  "baseUrl": "https://api.anthropic.com",
+  "apiKey": "${ANTHROPIC_API_KEY}",
+  "authType": "apiKey",
+  "defaultModel": "claude-3-5-sonnet-20241022",
+  "models": [
+    "claude-3-5-sonnet-20241022",
+    "claude-3-5-haiku-20241022",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307"
+  ],
+  "enabled": true,
+  "priority": 10,
+  "timeout": 60000,
+  "maxRetries": 3
+}
+
