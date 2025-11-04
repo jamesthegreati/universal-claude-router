@@ -1,10 +1,5 @@
 import { BaseTransformer } from '../base.js';
-import type {
-  ClaudeCodeRequest,
-  ClaudeCodeResponse,
-  Provider,
-  HttpMethod,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
 
 /**
  * Cohere transformer
@@ -15,7 +10,7 @@ export class CohereTransformer extends BaseTransformer {
 
   async transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -73,10 +68,7 @@ export class CohereTransformer extends BaseTransformer {
     };
   }
 
-  async transformResponse(
-    response: any,
-    original: ClaudeCodeRequest
-  ): Promise<ClaudeCodeResponse> {
+  async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     if (!response.text) {
       throw new Error('Invalid Cohere response: no text');
     }
@@ -104,7 +96,7 @@ export class CohereTransformer extends BaseTransformer {
   transformStreamChunk(chunk: string): string | null {
     try {
       const parsed = JSON.parse(chunk);
-      
+
       if (parsed.event_type === 'text-generation') {
         return `data: ${JSON.stringify({
           type: 'content_block_delta',

@@ -43,9 +43,7 @@ function interpolateObject(obj: any): any {
 /**
  * Load configuration from a JSON file
  */
-export async function loadConfigFromFile(
-  filePath: string
-): Promise<UCRConfig> {
+export async function loadConfigFromFile(filePath: string): Promise<UCRConfig> {
   try {
     const absolutePath = resolve(filePath);
     const content = await readFile(absolutePath, 'utf-8');

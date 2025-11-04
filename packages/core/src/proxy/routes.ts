@@ -50,17 +50,11 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       // Get transformer
       const transformer = transformerRegistry.get(provider.id);
       if (!transformer) {
-        throw new ProviderError(
-          `No transformer found for provider: ${provider.id}`,
-          provider.id
-        );
+        throw new ProviderError(`No transformer found for provider: ${provider.id}`, provider.id);
       }
 
       // Transform request
-      const transformedRequest = await transformer.transformRequest(
-        claudeRequest,
-        provider
-      );
+      const transformedRequest = await transformer.transformRequest(claudeRequest, provider);
 
       // Handle streaming
       if (claudeRequest.stream && transformer.supportsStreaming()) {
@@ -75,7 +69,7 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
         reply.raw.writeHead(200, {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
+          Connection: 'keep-alive',
         });
 
         const reader = stream.getReader();
@@ -121,15 +115,12 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
         throw new ProviderError(
           `Provider returned error: ${JSON.stringify(response.body)}`,
           provider.id,
-          response.statusCode
+          response.statusCode,
         );
       }
 
       // Transform response
-      const claudeResponse = await transformer.transformResponse(
-        response.body,
-        claudeRequest
-      );
+      const claudeResponse = await transformer.transformResponse(response.body, claudeRequest);
 
       const duration = Date.now() - startTime;
       logger.info({

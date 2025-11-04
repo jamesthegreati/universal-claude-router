@@ -11,8 +11,7 @@ export class TokenStore {
   private credentials: Map<string, AuthCredential> = new Map();
 
   constructor(storePath?: string) {
-    this.storePath =
-      storePath || path.join(homedir(), '.ucr', 'credentials.json');
+    this.storePath = storePath || path.join(homedir(), '.ucr', 'credentials.json');
   }
 
   /**

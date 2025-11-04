@@ -54,7 +54,7 @@ export function logRequest(
   method: string,
   url: string,
   statusCode: number,
-  duration: number
+  duration: number,
 ): void {
   const log = getLogger();
   log.info({
@@ -90,7 +90,7 @@ export function logProviderRequest(
   model: string,
   duration: number,
   success: boolean,
-  error?: string
+  error?: string,
 ): void {
   const log = getLogger();
   log.info({
@@ -106,8 +106,6 @@ export function logProviderRequest(
 /**
  * Create child logger with context
  */
-export function createChildLogger(
-  context: Record<string, unknown>
-): pino.Logger {
+export function createChildLogger(context: Record<string, unknown>): pino.Logger {
   return getLogger().child(context);
 }

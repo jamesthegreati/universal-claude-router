@@ -205,15 +205,17 @@ export interface UCRConfig {
  */
 export interface ClaudeCodeMessage {
   role: 'user' | 'assistant';
-  content: string | Array<{
-    type: 'text' | 'image';
-    text?: string;
-    source?: {
-      type: 'base64';
-      media_type: string;
-      data: string;
-    };
-  }>;
+  content:
+    | string
+    | Array<{
+        type: 'text' | 'image';
+        text?: string;
+        source?: {
+          type: 'base64';
+          media_type: string;
+          data: string;
+        };
+      }>;
 }
 
 export interface ClaudeCodeRequest {
@@ -254,7 +256,10 @@ export interface ClaudeCodeResponse {
  */
 export interface Transformer {
   provider: string;
-  transformRequest(request: ClaudeCodeRequest, provider: Provider): Promise<{
+  transformRequest(
+    request: ClaudeCodeRequest,
+    provider: Provider,
+  ): Promise<{
     url: string;
     method: HttpMethod;
     headers: Record<string, string>;
@@ -294,7 +299,7 @@ export type CustomRouter = (
     config: UCRConfig;
     taskType: TaskType;
     tokenCount: number;
-  }
+  },
 ) => Promise<string> | string;
 
 /**

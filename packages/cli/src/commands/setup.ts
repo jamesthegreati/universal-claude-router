@@ -39,28 +39,32 @@ export const setupCommand = new Command('setup')
 
     // Server configuration
     const serverGroup = await prompts.group({
-      host: () => prompts.text({
-        message: 'Server host:',
-        initialValue: 'localhost',
-      }),
-      port: () => prompts.text({
-        message: 'Server port:',
-        initialValue: '3000',
-        validate: (value) => {
-          const num = parseInt(value);
-          if (isNaN(num) || num < 1 || num > 65535) {
-            return 'Invalid port number';
-          }
-        },
-      }),
-      cors: () => prompts.confirm({
-        message: 'Enable CORS?',
-        initialValue: true,
-      }),
-      rateLimit: () => prompts.confirm({
-        message: 'Enable rate limiting?',
-        initialValue: true,
-      }),
+      host: () =>
+        prompts.text({
+          message: 'Server host:',
+          initialValue: 'localhost',
+        }),
+      port: () =>
+        prompts.text({
+          message: 'Server port:',
+          initialValue: '3000',
+          validate: (value) => {
+            const num = parseInt(value);
+            if (isNaN(num) || num < 1 || num > 65535) {
+              return 'Invalid port number';
+            }
+          },
+        }),
+      cors: () =>
+        prompts.confirm({
+          message: 'Enable CORS?',
+          initialValue: true,
+        }),
+      rateLimit: () =>
+        prompts.confirm({
+          message: 'Enable rate limiting?',
+          initialValue: true,
+        }),
     });
 
     if (prompts.isCancel(serverGroup)) {
@@ -91,17 +95,19 @@ export const setupCommand = new Command('setup')
 
     // Routing configuration
     const routerConfig = await prompts.group({
-      defaultProvider: () => prompts.select({
-        message: 'Default provider:',
-        options: (providers as string[]).map((p: string) => ({
-          value: p as any,
-          label: p,
-        })),
-      }) as any,
-      enableTaskRouting: () => prompts.confirm({
-        message: 'Enable task-based routing?',
-        initialValue: true,
-      }),
+      defaultProvider: () =>
+        prompts.select({
+          message: 'Default provider:',
+          options: (providers as string[]).map((p: string) => ({
+            value: p as any,
+            label: p,
+          })),
+        }) as any,
+      enableTaskRouting: () =>
+        prompts.confirm({
+          message: 'Enable task-based routing?',
+          initialValue: true,
+        }),
     });
 
     if (prompts.isCancel(routerConfig)) {
@@ -113,30 +119,33 @@ export const setupCommand = new Command('setup')
     let taskRouting: any = {};
     if (routerConfig.enableTaskRouting) {
       taskRouting = await prompts.group({
-        think: () => prompts.select({
-          message: 'Provider for reasoning tasks:',
-          options: (providers as string[]).map((p: string) => ({
-            value: p as any,
-            label: p,
-          })),
-          initialValue: routerConfig.defaultProvider as any,
-        }) as any,
-        background: () => prompts.select({
-          message: 'Provider for background tasks:',
-          options: (providers as string[]).map((p: string) => ({
-            value: p as any,
-            label: p,
-          })),
-          initialValue: routerConfig.defaultProvider as any,
-        }) as any,
-        longContext: () => prompts.select({
-          message: 'Provider for long context:',
-          options: (providers as string[]).map((p: string) => ({
-            value: p as any,
-            label: p,
-          })),
-          initialValue: routerConfig.defaultProvider as any,
-        }) as any,
+        think: () =>
+          prompts.select({
+            message: 'Provider for reasoning tasks:',
+            options: (providers as string[]).map((p: string) => ({
+              value: p as any,
+              label: p,
+            })),
+            initialValue: routerConfig.defaultProvider as any,
+          }) as any,
+        background: () =>
+          prompts.select({
+            message: 'Provider for background tasks:',
+            options: (providers as string[]).map((p: string) => ({
+              value: p as any,
+              label: p,
+            })),
+            initialValue: routerConfig.defaultProvider as any,
+          }) as any,
+        longContext: () =>
+          prompts.select({
+            message: 'Provider for long context:',
+            options: (providers as string[]).map((p: string) => ({
+              value: p as any,
+              label: p,
+            })),
+            initialValue: routerConfig.defaultProvider as any,
+          }) as any,
       });
 
       if (prompts.isCancel(taskRouting)) {

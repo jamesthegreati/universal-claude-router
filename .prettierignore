@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+coverage/
+*.lock
+package-lock.json
+.turbo/
+.cache/
+*.min.js
+*.bundle.js
+.git/

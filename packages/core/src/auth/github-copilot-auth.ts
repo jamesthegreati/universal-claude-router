@@ -15,18 +15,12 @@ export class GitHubCopilotAuth {
   private oauthManager: OAuthManager;
   private config: Required<GitHubCopilotAuthConfig>;
 
-  constructor(
-    tokenStore: TokenStore,
-    config: GitHubCopilotAuthConfig = {}
-  ) {
+  constructor(tokenStore: TokenStore, config: GitHubCopilotAuthConfig = {}) {
     this.oauthManager = new OAuthManager(tokenStore);
     this.config = {
       clientId: config.clientId || 'Iv1.b507a08c87ecfe98',
-      deviceCodeUrl:
-        config.deviceCodeUrl || 'https://github.com/login/device/code',
-      tokenUrl:
-        config.tokenUrl ||
-        'https://github.com/login/oauth/access_token',
+      deviceCodeUrl: config.deviceCodeUrl || 'https://github.com/login/device/code',
+      tokenUrl: config.tokenUrl || 'https://github.com/login/oauth/access_token',
       scope: config.scope || 'read:user',
     };
   }
@@ -39,7 +33,7 @@ export class GitHubCopilotAuth {
       'github-copilot',
       this.config.clientId,
       this.config.deviceCodeUrl,
-      this.config.scope
+      this.config.scope,
     );
   }
 
@@ -53,7 +47,7 @@ export class GitHubCopilotAuth {
       this.config.clientId,
       this.config.tokenUrl,
       deviceCodeResponse.interval,
-      deviceCodeResponse.expires_in
+      deviceCodeResponse.expires_in,
     );
 
     await this.oauthManager.saveCredentials('github-copilot', tokenResponse);
@@ -64,7 +58,7 @@ export class GitHubCopilotAuth {
    */
   async getAccessToken(): Promise<string | undefined> {
     const credential = await this.oauthManager.getCredentials('github-copilot');
-    
+
     if (!credential) {
       return undefined;
     }
@@ -75,7 +69,7 @@ export class GitHubCopilotAuth {
         'github-copilot',
         credential.refreshToken,
         this.config.clientId,
-        this.config.tokenUrl
+        this.config.tokenUrl,
       );
       return tokenResponse.access_token;
     }

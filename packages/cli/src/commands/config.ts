@@ -5,8 +5,7 @@ import { loadConfig } from '@ucr/core';
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
 
-export const configCommand = new Command('config')
-  .description('Manage configuration');
+export const configCommand = new Command('config').description('Manage configuration');
 
 // config init
 configCommand

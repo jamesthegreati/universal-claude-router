@@ -126,6 +126,7 @@ curl http://localhost:3000/health
 ```
 
 Response:
+
 ```json
 {
   "status": "ok",
@@ -160,6 +161,7 @@ claude-code
 ```
 
 Claude Code will now route all requests through UCR, which will:
+
 1. Detect the task type
 2. Select the appropriate provider
 3. Transform the request format
@@ -191,6 +193,7 @@ curl -X POST http://localhost:3000/v1/messages \
 ### Check Logs
 
 UCR logs all requests and responses. Watch the server logs to see:
+
 - Request received
 - Task type detection
 - Provider selection
@@ -202,11 +205,13 @@ UCR logs all requests and responses. Watch the server logs to see:
 To set up multiple providers:
 
 1. Copy the multi-provider example:
+
 ```bash
 cp config/examples/multi-provider.json ucr.config.json
 ```
 
 2. Set all required API keys:
+
 ```bash
 export ANTHROPIC_API_KEY="your-anthropic-key"
 export OPENAI_API_KEY="your-openai-key"
@@ -245,7 +250,8 @@ ollama pull llama2
 
 ### Configure UCR
 
-The Ollama provider template is already included. Just ensure the service is running on `localhost:11434`.
+The Ollama provider template is already included. Just ensure the service is running on
+`localhost:11434`.
 
 ### Test Local Model
 
@@ -261,6 +267,7 @@ UCR supports hot-reloading of configuration. While the server is running:
 4. Changes take effect immediately (no restart needed)
 
 Watch the logs for:
+
 ```
 {"level":30,"type":"config_reloaded","message":"Configuration reloaded"}
 ```

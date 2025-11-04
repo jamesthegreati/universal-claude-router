@@ -143,7 +143,7 @@ describe('Task Detector', () => {
 
     it('should have default higher priority than background', () => {
       expect(getTaskPriority(TaskType.DEFAULT)).toBeGreaterThan(
-        getTaskPriority(TaskType.BACKGROUND)
+        getTaskPriority(TaskType.BACKGROUND),
       );
     });
   });

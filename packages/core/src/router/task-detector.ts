@@ -6,9 +6,7 @@ import type { ClaudeCodeRequest } from '@ucr/shared';
  */
 export function detectTaskType(request: ClaudeCodeRequest): TaskType {
   // Get last user message
-  const lastMessage = [...request.messages]
-    .reverse()
-    .find((m) => m.role === 'user');
+  const lastMessage = [...request.messages].reverse().find((m) => m.role === 'user');
 
   if (!lastMessage) {
     return TaskType.DEFAULT;
@@ -17,9 +15,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
   const content =
     typeof lastMessage.content === 'string'
       ? lastMessage.content
-      : lastMessage.content
-          .map((part) => (part.type === 'text' ? part.text : ''))
-          .join(' ');
+      : lastMessage.content.map((part) => (part.type === 'text' ? part.text : '')).join(' ');
 
   const contentLower = content.toLowerCase();
 
@@ -66,7 +62,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     'step by step',
     'explain why',
     'reasoning',
-    'let\'s think',
+    "let's think",
     'chain of thought',
   ];
   if (thinkKeywords.some((keyword) => contentLower.includes(keyword))) {
@@ -78,9 +74,7 @@ export function detectTaskType(request: ClaudeCodeRequest): TaskType {
     const msgContent =
       typeof msg.content === 'string'
         ? msg.content
-        : msg.content
-            .map((part) => (part.type === 'text' ? part.text : ''))
-            .join('');
+        : msg.content.map((part) => (part.type === 'text' ? part.text : '')).join('');
     return sum + msgContent.length;
   }, 0);
 

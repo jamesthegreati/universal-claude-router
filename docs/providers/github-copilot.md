@@ -20,6 +20,7 @@ ucr auth login github-copilot
 ```
 
 This will:
+
 1. Start the device code flow
 2. Display a verification URL and code
 3. Open your browser (optional)
@@ -77,7 +78,8 @@ cp config/providers/github-copilot.json ucr.config.json
 
 ## Environment Variables
 
-After authentication via CLI, the token is stored in `~/.ucr/credentials.json` and doesn't need environment variables.
+After authentication via CLI, the token is stored in `~/.ucr/credentials.json` and doesn't need
+environment variables.
 
 For manual configuration, you can set:
 
@@ -102,23 +104,22 @@ const router = new UniversalClaudeRouter({
       baseUrl: 'https://api.githubcopilot.com',
       apiKey: 'ghu_xxxx',
       authType: 'oauth',
-      defaultModel: 'gpt-4'
-    }
-  ]
+      defaultModel: 'gpt-4',
+    },
+  ],
 });
 
 const response = await router.request({
   model: 'gpt-4',
-  messages: [
-    { role: 'user', content: 'Hello!' }
-  ],
-  max_tokens: 1024
+  messages: [{ role: 'user', content: 'Hello!' }],
+  max_tokens: 1024,
 });
 ```
 
 ## Features & Limitations
 
 ### Supported Features
+
 - ✅ Text generation
 - ✅ Streaming
 - ✅ System messages
@@ -127,6 +128,7 @@ const response = await router.request({
 - ✅ Token usage tracking
 
 ### Limitations
+
 - ❌ Vision/image inputs (use OpenAI directly)
 - ❌ Function calling (use OpenAI directly)
 - ⚠️ Requires active GitHub Copilot subscription
@@ -135,6 +137,7 @@ const response = await router.request({
 ## Subscription Requirements
 
 GitHub Copilot requires one of:
+
 - GitHub Copilot Individual subscription ($10/month)
 - GitHub Copilot Business subscription (via organization)
 - GitHub Copilot Enterprise subscription (via organization)
@@ -142,6 +145,7 @@ GitHub Copilot requires one of:
 ## Rate Limits
 
 Rate limits depend on your subscription:
+
 - **Individual**: ~150 requests/day
 - **Business**: Higher limits
 - **Enterprise**: Highest limits
@@ -153,6 +157,7 @@ UCR automatically handles rate limit errors and can fail over to other providers
 The OAuth device code flow works as follows:
 
 1. **Request Device Code**
+
    ```
    POST https://github.com/login/device/code
    client_id=Iv1.b507a08c87ecfe98
@@ -164,6 +169,7 @@ The OAuth device code flow works as follows:
    - Authorizes the application
 
 3. **Token Polling**
+
    ```
    POST https://github.com/login/oauth/access_token
    client_id=Iv1.b507a08c87ecfe98
@@ -213,21 +219,22 @@ UCR will automatically fail over to the next priority provider.
 
 GitHub Copilot uses an OpenAI-compatible API with minor differences:
 
-| Feature | OpenAI API | GitHub Copilot |
-|---------|-----------|----------------|
-| Authentication | API Key | OAuth Token |
-| Base URL | api.openai.com | api.githubcopilot.com |
-| Models | All OpenAI models | GPT-4, GPT-3.5 |
-| Rate Limits | Per API key | Per GitHub account |
+| Feature        | OpenAI API        | GitHub Copilot        |
+| -------------- | ----------------- | --------------------- |
+| Authentication | API Key           | OAuth Token           |
+| Base URL       | api.openai.com    | api.githubcopilot.com |
+| Models         | All OpenAI models | GPT-4, GPT-3.5        |
+| Rate Limits    | Per API key       | Per GitHub account    |
 
 ## Cost Tracking
 
 GitHub Copilot is included in your subscription, so costs are:
-- Individual: $10/month (unlimited* requests)
+
+- Individual: $10/month (unlimited\* requests)
 - Business: $19/user/month
 - Enterprise: Custom pricing
 
-*Subject to rate limits
+\*Subject to rate limits
 
 ## Best Practices
 

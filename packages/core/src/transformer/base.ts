@@ -17,7 +17,7 @@ export abstract class BaseTransformer implements Transformer {
    */
   abstract transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -30,7 +30,7 @@ export abstract class BaseTransformer implements Transformer {
    */
   abstract transformResponse(
     response: unknown,
-    original: ClaudeCodeRequest
+    original: ClaudeCodeRequest,
   ): Promise<ClaudeCodeResponse>;
 
   /**
@@ -65,9 +65,7 @@ export abstract class BaseTransformer implements Transformer {
   /**
    * Helper: Extract text content from Claude messages
    */
-  protected extractTextContent(
-    content: ClaudeCodeRequest['messages'][0]['content']
-  ): string {
+  protected extractTextContent(content: ClaudeCodeRequest['messages'][0]['content']): string {
     if (typeof content === 'string') {
       return content;
     }
@@ -88,10 +86,7 @@ export abstract class BaseTransformer implements Transformer {
   /**
    * Helper: Extract model name from request
    */
-  protected getModelName(
-    request: ClaudeCodeRequest,
-    provider: Provider
-  ): string {
+  protected getModelName(request: ClaudeCodeRequest, provider: Provider): string {
     // Use default model if specified
     if (provider.defaultModel) {
       return provider.defaultModel;

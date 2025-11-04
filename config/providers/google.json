@@ -7,8 +7,5 @@
   "defaultModel": "gemini-pro",
   "enabled": true,
   "priority": 7,
-  "models": [
-    "gemini-pro",
-    "gemini-pro-vision"
-  ]
+  "models": ["gemini-pro", "gemini-pro-vision"]
 }

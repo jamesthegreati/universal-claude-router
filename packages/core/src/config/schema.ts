@@ -4,13 +4,7 @@ import { z } from 'zod';
  * Zod schemas for UCR configuration validation
  */
 
-export const AuthTypeSchema = z.enum([
-  'apiKey',
-  'bearerToken',
-  'oauth',
-  'basic',
-  'none',
-]);
+export const AuthTypeSchema = z.enum(['apiKey', 'bearerToken', 'oauth', 'basic', 'none']);
 
 export const ProviderSchema = z.object({
   id: z.string().min(1),
@@ -46,10 +40,7 @@ export const ServerConfigSchema = z.object({
 });
 
 export const LoggingConfigSchema = z.object({
-  level: z
-    .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
-    .optional()
-    .default('info'),
+  level: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).optional().default('info'),
   file: z.string().optional(),
   pretty: z.boolean().optional().default(false),
   requests: z.boolean().optional().default(true),

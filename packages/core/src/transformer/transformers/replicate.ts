@@ -1,10 +1,5 @@
 import { BaseTransformer } from '../base.js';
-import type {
-  ClaudeCodeRequest,
-  ClaudeCodeResponse,
-  Provider,
-  HttpMethod,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
 
 /**
  * Replicate transformer
@@ -15,7 +10,7 @@ export class ReplicateTransformer extends BaseTransformer {
 
   async transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -58,10 +53,7 @@ export class ReplicateTransformer extends BaseTransformer {
     };
   }
 
-  async transformResponse(
-    response: any,
-    original: ClaudeCodeRequest
-  ): Promise<ClaudeCodeResponse> {
+  async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     let text = '';
 
     if (response.output) {
@@ -95,7 +87,7 @@ export class ReplicateTransformer extends BaseTransformer {
   transformStreamChunk(chunk: string): string | null {
     try {
       const parsed = JSON.parse(chunk);
-      
+
       if (parsed.output) {
         const text = Array.isArray(parsed.output)
           ? parsed.output[parsed.output.length - 1]

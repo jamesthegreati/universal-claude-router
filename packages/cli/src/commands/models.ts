@@ -3,8 +3,7 @@ import chalk from 'chalk';
 import { loadConfig } from '@ucr/core';
 import fs from 'fs/promises';
 
-export const modelsCommand = new Command('models')
-  .description('Manage models');
+export const modelsCommand = new Command('models').description('Manage models');
 
 // models list
 modelsCommand
@@ -27,7 +26,7 @@ modelsCommand
 
       for (const prov of providers) {
         console.log(chalk.bold(`\n${prov.name} (${prov.id}):`));
-        
+
         if (prov.defaultModel) {
           console.log(`  Default: ${chalk.green(prov.defaultModel)}`);
         }
@@ -78,7 +77,7 @@ modelsCommand
 
       provider.defaultModel = modelId;
       await fs.writeFile(configPath, JSON.stringify(config, null, 2));
-      
+
       console.log(chalk.green(`✓ Set default model for ${providerId}: ${modelId}`));
     } catch (error) {
       console.error(chalk.red(`Error: ${error}`));
@@ -122,10 +121,14 @@ modelsCommand
           }
           console.log(`  Input Cost: $${model.inputCostPer1k}/1K tokens`);
           console.log(`  Output Cost: $${model.outputCostPer1k}/1K tokens`);
-          console.log(`  Streaming: ${model.supportsStreaming ? chalk.green('✓') : chalk.red('✗')}`);
+          console.log(
+            `  Streaming: ${model.supportsStreaming ? chalk.green('✓') : chalk.red('✗')}`,
+          );
           console.log(`  Vision: ${model.supportsVision ? chalk.green('✓') : chalk.red('✗')}`);
-          console.log(`  Function Calling: ${model.supportsFunctionCalling ? chalk.green('✓') : chalk.red('✗')}`);
-          
+          console.log(
+            `  Function Calling: ${model.supportsFunctionCalling ? chalk.green('✓') : chalk.red('✗')}`,
+          );
+
           if (model.description) {
             console.log(`\nDescription: ${model.description}`);
           }

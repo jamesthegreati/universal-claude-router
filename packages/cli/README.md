@@ -28,6 +28,7 @@ ucr setup
 ```
 
 This will guide you through:
+
 - Server configuration (host, port, CORS, rate limiting)
 - Provider selection
 - Routing configuration
@@ -232,6 +233,7 @@ UCR looks for configuration in these locations:
 ## Credentials Storage
 
 Credentials are stored securely in:
+
 - Location: `~/.ucr/credentials.json`
 - Format: JSON with provider-specific auth data
 - Permissions: User-only access
@@ -272,6 +274,7 @@ Use custom routing logic:
 ### Provider Discovery
 
 UCR can automatically discover:
+
 - **Ollama**: http://localhost:11434
 - **LM Studio**: http://localhost:1234
 - **LocalAI**: http://localhost:8080

@@ -21,7 +21,7 @@ export interface HttpResponse<T = unknown> {
  * Make HTTP request with timeout and error handling
  */
 export async function makeHttpRequest<T = unknown>(
-  options: HttpRequestOptions
+  options: HttpRequestOptions,
 ): Promise<HttpResponse<T>> {
   const { method, url, headers = {}, body, timeout = 30000, signal } = options;
 
@@ -30,9 +30,7 @@ export async function makeHttpRequest<T = unknown>(
   const timeoutId = timeout ? setTimeout(() => controller.abort(), timeout) : null;
 
   // Combine signals
-  const combinedSignal = signal
-    ? AbortSignal.any([signal, controller.signal])
-    : controller.signal;
+  const combinedSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
 
   try {
     const response = await request(url, {
@@ -66,11 +64,7 @@ export async function makeHttpRequest<T = unknown>(
         throw new TimeoutError(`Request to ${url} timed out after ${timeout}ms`);
       }
 
-      throw new ProviderError(
-        `HTTP request failed: ${error.message}`,
-        new URL(url).hostname,
-        500
-      );
+      throw new ProviderError(`HTTP request failed: ${error.message}`, new URL(url).hostname, 500);
     }
 
     throw error;
@@ -80,17 +74,13 @@ export async function makeHttpRequest<T = unknown>(
 /**
  * Make streaming HTTP request
  */
-export async function makeStreamingRequest(
-  options: HttpRequestOptions
-): Promise<ReadableStream> {
+export async function makeStreamingRequest(options: HttpRequestOptions): Promise<ReadableStream> {
   const { method, url, headers = {}, body, timeout = 30000, signal } = options;
 
   const controller = new AbortController();
   const timeoutId = timeout ? setTimeout(() => controller.abort(), timeout) : null;
 
-  const combinedSignal = signal
-    ? AbortSignal.any([signal, controller.signal])
-    : controller.signal;
+  const combinedSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
 
   try {
     const response = await request(url, {
@@ -112,7 +102,7 @@ export async function makeStreamingRequest(
       throw new ProviderError(
         `Provider returned error: ${JSON.stringify(errorBody)}`,
         new URL(url).hostname,
-        response.statusCode
+        response.statusCode,
       );
     }
 
@@ -136,7 +126,7 @@ export async function makeStreamingRequest(
 export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
-  baseDelay: number = 1000
+  baseDelay: number = 1000,
 ): Promise<T> {
   let lastError: Error | null = null;
 

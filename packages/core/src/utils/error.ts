@@ -6,7 +6,7 @@ export class UCRError extends Error {
     message: string,
     public code: string,
     public statusCode: number = 500,
-    public details?: Record<string, unknown>
+    public details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'UCRError';
@@ -41,7 +41,7 @@ export class ProviderError extends UCRError {
     message: string,
     public provider: string,
     statusCode: number = 502,
-    details?: Record<string, unknown>
+    details?: Record<string, unknown>,
   ) {
     super(message, 'PROVIDER_ERROR', statusCode, { ...details, provider });
     this.name = 'ProviderError';
@@ -85,7 +85,7 @@ export class TransformerError extends UCRError {
   constructor(
     message: string,
     public transformer: string,
-    details?: Record<string, unknown>
+    details?: Record<string, unknown>,
   ) {
     super(message, 'TRANSFORMER_ERROR', 500, { ...details, transformer });
     this.name = 'TransformerError';

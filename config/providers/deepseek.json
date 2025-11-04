@@ -7,8 +7,5 @@
   "defaultModel": "deepseek-chat",
   "enabled": true,
   "priority": 6,
-  "models": [
-    "deepseek-chat",
-    "deepseek-coder"
-  ]
+  "models": ["deepseek-chat", "deepseek-coder"]
 }

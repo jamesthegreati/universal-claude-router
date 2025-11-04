@@ -1,10 +1,5 @@
 import { BaseTransformer } from '../base.js';
-import type {
-  ClaudeCodeRequest,
-  ClaudeCodeResponse,
-  Provider,
-  HttpMethod,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
 
 /**
  * Ollama transformer for local models
@@ -14,7 +9,7 @@ export class OllamaTransformer extends BaseTransformer {
 
   async transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -62,10 +57,7 @@ export class OllamaTransformer extends BaseTransformer {
     };
   }
 
-  async transformResponse(
-    response: any,
-    original: ClaudeCodeRequest
-  ): Promise<ClaudeCodeResponse> {
+  async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     return {
       id: this.generateId(),
       type: 'message',

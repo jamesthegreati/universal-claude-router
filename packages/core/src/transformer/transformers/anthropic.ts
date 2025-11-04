@@ -1,10 +1,5 @@
 import { BaseTransformer } from '../base.js';
-import type {
-  ClaudeCodeRequest,
-  ClaudeCodeResponse,
-  Provider,
-  HttpMethod,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
 
 /**
  * Anthropic transformer (pass-through since Claude Code uses Anthropic format)
@@ -14,7 +9,7 @@ export class AnthropicTransformer extends BaseTransformer {
 
   async transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -40,7 +35,7 @@ export class AnthropicTransformer extends BaseTransformer {
 
   async transformResponse(
     response: unknown,
-    original: ClaudeCodeRequest
+    original: ClaudeCodeRequest,
   ): Promise<ClaudeCodeResponse> {
     // Response is already in Claude Code format
     return response as ClaudeCodeResponse;
