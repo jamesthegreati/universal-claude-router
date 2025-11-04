@@ -37,3 +37,7 @@ coverage/
 # Misc
 *.tsbuildinfo
 .cache/
+
+# NPM package tarballs
+*.tgz
+package/

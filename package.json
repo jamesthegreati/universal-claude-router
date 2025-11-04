@@ -57,7 +57,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "prepublishOnly": "npm run build",
+    "publish:npm": "./scripts/publish.sh",
+    "release": "./scripts/release.sh"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

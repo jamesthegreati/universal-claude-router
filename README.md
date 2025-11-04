@@ -304,6 +304,22 @@ cd packages/shared && npm test
 cd packages/core && npm test
 ```
 
+## 📦 Publishing
+
+For maintainers: To publish a new version to npm, use the release script:
+
+```bash
+npm run release
+```
+
+This will:
+1. Bump the version (patch/minor/major)
+2. Create a git tag
+3. Push to GitHub
+4. Trigger GitHub Actions to automatically publish to npm
+
+For detailed publishing instructions, see [PUBLISHING.md](PUBLISHING.md).
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
