@@ -33,9 +33,12 @@ export class LazyTransformerRegistry {
    */
   private registerLoader(
     provider: string,
-    loader: () => Promise<{
-      default: new () => Transformer;
-    } | { [key: string]: new () => Transformer }>,
+    loader: () => Promise<
+      | {
+          default: new () => Transformer;
+        }
+      | { [key: string]: new () => Transformer }
+    >,
   ): void {
     this.loaders.set(provider, loader);
   }
