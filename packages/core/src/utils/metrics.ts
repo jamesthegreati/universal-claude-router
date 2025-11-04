@@ -59,8 +59,7 @@ export class PerformanceMetrics {
       cache: {
         hits: this.metrics.cacheHits,
         misses: this.metrics.cacheMisses,
-        hitRate:
-          this.metrics.cacheHits / (this.metrics.cacheHits + this.metrics.cacheMisses || 1),
+        hitRate: this.metrics.cacheHits / (this.metrics.cacheHits + this.metrics.cacheMisses || 1),
       },
       uptime: uptime,
     };

@@ -12,11 +12,7 @@ export class FastPathRouter {
    */
   canUseFastPath(request: ClaudeCodeRequest): boolean {
     // Only non-streaming, single-message, small requests
-    return (
-      !request.stream &&
-      request.messages.length === 1 &&
-      this.estimateTokens(request) < 1000
-    );
+    return !request.stream && request.messages.length === 1 && this.estimateTokens(request) < 1000;
   }
 
   /**

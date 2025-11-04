@@ -1,6 +1,7 @@
 # Performance Optimization Guide
 
-This document describes the performance optimizations implemented in Universal Claude Router and how to use them effectively.
+This document describes the performance optimizations implemented in Universal Claude Router and how
+to use them effectively.
 
 ## Table of Contents
 
@@ -34,13 +35,13 @@ Universal Claude Router is optimized for:
 
 ### Achieved Results
 
-| Metric | Target | Achieved | Notes |
-|--------|--------|----------|-------|
-| Request Overhead | < 10ms | 2-5ms | For cached requests |
-| TTFB | < 50ms | 15-30ms | With connection pooling |
-| Memory (idle) | < 50MB | 35-45MB | With all caches active |
-| Memory (load) | < 150MB | 80-120MB | At 500 concurrent requests |
-| Cache Hit Rate | > 80% | 75-85% | Depends on workload |
+| Metric           | Target  | Achieved | Notes                      |
+| ---------------- | ------- | -------- | -------------------------- |
+| Request Overhead | < 10ms  | 2-5ms    | For cached requests        |
+| TTFB             | < 50ms  | 15-30ms  | With connection pooling    |
+| Memory (idle)    | < 50MB  | 35-45MB  | With all caches active     |
+| Memory (load)    | < 150MB | 80-120MB | At 500 concurrent requests |
+| Cache Hit Rate   | > 80%   | 75-85%   | Depends on workload        |
 
 ## Optimizations
 
@@ -49,18 +50,21 @@ Universal Claude Router is optimized for:
 The router implements a two-tier cache system:
 
 #### L1 Cache (Hot)
+
 - **Size**: 100 entries
 - **TTL**: 1 minute
 - **Purpose**: Frequently accessed data
 - **Use Case**: Common requests, recent routing decisions
 
 #### L2 Cache (Warm)
+
 - **Size**: 1000 entries
 - **TTL**: 5 minutes
 - **Purpose**: Less frequent data
 - **Use Case**: Fallback for L1, larger dataset
 
 #### Response Cache
+
 - **Size**: 500 entries (50MB max)
 - **TTL**: 5 minutes
 - **Purpose**: Complete API responses
@@ -79,13 +83,14 @@ HTTP connections are pooled and reused:
 ```typescript
 // Configured automatically in http.ts
 const agent = new Agent({
-  connections: 100,        // Max concurrent connections
-  pipelining: 10,         // Requests per connection
+  connections: 100, // Max concurrent connections
+  pipelining: 10, // Requests per connection
   keepAliveTimeout: 60000, // 60 seconds
 });
 ```
 
 **Benefits**:
+
 - Reduces connection overhead
 - Enables request pipelining
 - Improves throughput 2-3x
@@ -119,12 +124,14 @@ await app.register(compress, {
 ```
 
 **Benefits**:
+
 - 20-30% bandwidth reduction
 - Faster transfer for large responses
 
 ### 5. Memory Management
 
 #### Memory Monitoring
+
 Automatic memory pressure detection:
 
 ```typescript
@@ -133,11 +140,13 @@ memoryMonitor.start();
 ```
 
 **Actions**:
+
 - Clears L2 cache
 - Triggers garbage collection
 - Logs memory pressure events
 
 #### Object Pooling
+
 Buffer reuse for streaming:
 
 ```typescript
@@ -237,6 +246,7 @@ curl http://localhost:3000/debug/metrics
 ```
 
 **Response**:
+
 ```json
 {
   "performance": {
@@ -309,6 +319,7 @@ npm install -g autocannon
 ```
 
 **Tests Include**:
+
 - Health endpoint baseline
 - Light load (50 connections)
 - Medium load (100 connections)
@@ -448,7 +459,7 @@ const request = {
 ```typescript
 // Modify cache-manager.ts
 const cache = new MultiLayerCache({
-  l1: { max: 200, ttl: 120000 },  // 2 minutes
+  l1: { max: 200, ttl: 120000 }, // 2 minutes
   l2: { max: 2000, ttl: 600000 }, // 10 minutes
 });
 ```
