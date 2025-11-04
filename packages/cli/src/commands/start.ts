@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs/promises';
+import { syncAuthToConfig } from '../utils/config-sync.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,6 +25,14 @@ export const startCommand = new Command('start')
       console.error(chalk.red(`❌ Configuration file not found: ${configPath}`));
       console.log(chalk.dim('\nRun `ucr setup` to create a configuration file.'));
       process.exit(1);
+    }
+
+    // Auto-sync authenticated providers to config
+    try {
+      await syncAuthToConfig(configPath);
+    } catch (error) {
+      // Non-fatal error, just log it
+      console.log(chalk.dim('Note: Could not sync authenticated providers'));
     }
 
     // Find the server binary - try multiple possible locations relative to this CLI

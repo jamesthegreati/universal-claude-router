@@ -7,6 +7,9 @@ import { modelsCommand } from './commands/models.js';
 import { configCommand } from './commands/config.js';
 import { setupCommand } from './commands/setup.js';
 import { startCommand } from './commands/start.js';
+import { statusCommand } from './commands/status.js';
+import { modelSelectorCommand } from './commands/model-selector.js';
+import { codeCommand } from './commands/code.js';
 
 const program = new Command();
 
@@ -19,5 +22,8 @@ program.addCommand(authCommand);
 program.addCommand(providersCommand);
 program.addCommand(modelsCommand);
 program.addCommand(configCommand);
+program.addCommand(statusCommand);
+program.addCommand(modelSelectorCommand);
+program.addCommand(codeCommand);
 
 program.parse();

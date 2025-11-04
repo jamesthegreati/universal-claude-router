@@ -81,7 +81,7 @@ export async function createServer(config: UCRConfig) {
 
   // Health check endpoint
   app.get('/health', async () => {
-    return { status: 'ok', timestamp: Date.now() };
+    return { status: 'ok', version: '0.1.0', timestamp: Date.now() };
   });
 
   // Setup main routes
