@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "cors": {
+      "origin": "*",
+      "credentials": true
+    },
+    "rateLimit": {
+      "max": 100,
+      "timeWindow": "1 minute"
+    }
+  },
+  "logging": {
+    "level": "info",
+    "pretty": false,
+    "requests": true,
+    "file": "./logs/ucr.log"
+  },
+  "providers": [
+    {
+      "id": "anthropic",
+      "name": "Anthropic Claude",
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "authType": "apiKey",
+      "defaultModel": "claude-3-5-sonnet-20241022",
+      "enabled": true,
+      "priority": 10,
+      "timeout": 60000,
+      "maxRetries": 3
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI GPT",
+      "baseUrl": "https://api.openai.com",
+      "apiKey": "${OPENAI_API_KEY}",
+      "authType": "bearerToken",
+      "defaultModel": "gpt-4-turbo-preview",
+      "enabled": true,
+      "priority": 8,
+      "timeout": 60000,
+      "maxRetries": 3
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama Local",
+      "baseUrl": "http://localhost:11434",
+      "authType": "none",
+      "defaultModel": "llama2",
+      "enabled": true,
+      "priority": 5,
+      "timeout": 120000,
+      "maxRetries": 2
+    }
+  ],
+  "router": {
+    "default": "anthropic",
+    "think": "anthropic",
+    "background": "ollama",
+    "longContext": "anthropic",
+    "webSearch": "openai",
+    "image": "openai",
+    "tokenThreshold": 100000
+  },
+  "features": {
+    "costTracking": true,
+    "analytics": true,
+    "healthChecks": true,
+    "autoDiscovery": true
+  }
+}

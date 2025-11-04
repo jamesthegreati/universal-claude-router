@@ -1,0 +1,21 @@
+{
+  "id": "ollama",
+  "name": "Ollama Local Models",
+  "baseUrl": "http://localhost:11434",
+  "authType": "none",
+  "defaultModel": "llama2",
+  "models": [
+    "llama2",
+    "codellama",
+    "mistral",
+    "mixtral",
+    "phi",
+    "neural-chat",
+    "starling-lm",
+    "llama2-uncensored"
+  ],
+  "enabled": true,
+  "priority": 5,
+  "timeout": 120000,
+  "maxRetries": 2
+}

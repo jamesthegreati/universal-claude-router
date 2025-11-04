@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "cors": {
+      "origin": "*",
+      "credentials": true
+    }
+  },
+  "logging": {
+    "level": "info",
+    "pretty": true,
+    "requests": true
+  },
+  "providers": [
+    {
+      "id": "anthropic",
+      "name": "Anthropic Claude",
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "authType": "apiKey",
+      "defaultModel": "claude-3-5-sonnet-20241022",
+      "enabled": true,
+      "priority": 10
+    }
+  ],
+  "router": {
+    "default": "anthropic",
+    "tokenThreshold": 100000
+  },
+  "features": {
+    "costTracking": true,
+    "analytics": true,
+    "healthChecks": true,
+    "autoDiscovery": false
+  }
+}
