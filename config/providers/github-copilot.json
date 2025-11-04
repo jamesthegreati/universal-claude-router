@@ -1,0 +1,14 @@
+{
+  "id": "github-copilot",
+  "name": "GitHub Copilot",
+  "baseUrl": "https://api.githubcopilot.com",
+  "apiKey": "${GITHUB_COPILOT_TOKEN}",
+  "authType": "oauth",
+  "defaultModel": "gpt-4",
+  "enabled": true,
+  "priority": 8,
+  "models": [
+    "gpt-4",
+    "gpt-3.5-turbo"
+  ]
+}
