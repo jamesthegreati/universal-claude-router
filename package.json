@@ -1,11 +1,54 @@
 {
-  "name": "universal-claude-router",
+  "name": "@universal-claude-router/cli",
   "version": "0.1.0",
-  "private": true,
+  "description": "Universal Claude Router - Route Claude Code to 75+ LLM providers",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "llm",
+    "router",
+    "anthropic",
+    "openai",
+    "ollama",
+    "ai",
+    "proxy",
+    "github-copilot"
+  ],
+  "homepage": "https://github.com/jamesthegreati/universal-claude-router",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesthegreati/universal-claude-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jamesthegreati/universal-claude-router/issues"
+  },
+  "author": "jamesthegreati",
+  "license": "MIT",
+  "private": false,
   "type": "module",
   "workspaces": [
     "packages/*"
   ],
+  "bin": {
+    "ucr": "./packages/cli/dist/cli.js",
+    "universal-claude-router": "./packages/cli/dist/cli.js"
+  },
+  "files": [
+    "packages/cli/dist/**/*",
+    "packages/core/dist/**/*",
+    "packages/shared/dist/**/*",
+    "packages/*/package.json",
+    "README.md",
+    "LICENSE",
+    "install.sh"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
