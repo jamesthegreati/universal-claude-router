@@ -10,6 +10,8 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     strategy:
       matrix:
@@ -43,6 +45,8 @@ jobs:
   format-check:
     name: Format Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
@@ -59,3 +63,4 @@ jobs:
 
       - name: Check formatting
         run: npx prettier --check "**/*.{ts,tsx,md,json}"
+
