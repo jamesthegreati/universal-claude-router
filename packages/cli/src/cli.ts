@@ -6,6 +6,7 @@ import { providersCommand } from './commands/providers.js';
 import { modelsCommand } from './commands/models.js';
 import { configCommand } from './commands/config.js';
 import { setupCommand } from './commands/setup.js';
+import { startCommand } from './commands/start.js';
 
 const program = new Command();
 
@@ -13,6 +14,7 @@ program.name('ucr').description('Universal Claude Router CLI').version('0.1.0');
 
 // Add commands
 program.addCommand(setupCommand);
+program.addCommand(startCommand);
 program.addCommand(authCommand);
 program.addCommand(providersCommand);
 program.addCommand(modelsCommand);

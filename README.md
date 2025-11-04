@@ -45,25 +45,54 @@ Universal Claude Router (UCR) combines the best features from
 - **Validation** - Zod schema validation for all config
 - **Templates** - Pre-configured provider templates
 
-## 🚀 Quick Start
+## 🚀 Installation
 
-### Installation
+### Option 1: NPM Global Install (Recommended)
 
 ```bash
-# Clone the repository
+npm install -g @universal-claude-router/cli
+```
+
+### Option 2: One-Line Installer
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jamesthegreati/universal-claude-router/main/install.sh | bash
+```
+
+### Option 3: Manual Installation
+
+```bash
 git clone https://github.com/jamesthegreati/universal-claude-router.git
 cd universal-claude-router
-
-# Install dependencies
 npm install
-
-# Build all packages
 npm run build
+npm link
 ```
+
+### Verify Installation
+
+```bash
+# Check version
+ucr --version
+
+# Show help
+ucr --help
+
+# Alternative command
+universal-claude-router --help
+```
+
+## 🚀 Quick Start
 
 ### Configuration
 
-Create a `ucr.config.json` file:
+Run the interactive setup wizard:
+
+```bash
+ucr setup
+```
+
+Or create a `ucr.config.json` file manually:
 
 ```json
 {
@@ -95,11 +124,10 @@ Set your API key:
 export ANTHROPIC_API_KEY="your-api-key-here"
 ```
 
-### Running the Server
+### Start the Router
 
 ```bash
-# Start the server
-node packages/core/dist/bin/server.js ucr.config.json
+ucr start
 ```
 
 The server will start on `http://localhost:3000`.
@@ -115,6 +143,35 @@ export ANTHROPIC_API_KEY="dummy-key"  # UCR handles the real key
 
 # Run Claude Code
 claude-code
+```
+
+## 🔄 Updating
+
+### If installed via npm:
+
+```bash
+npm update -g @universal-claude-router/cli
+```
+
+### If installed via install.sh:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jamesthegreati/universal-claude-router/main/install.sh | bash
+```
+
+## 🗑️ Uninstalling
+
+### If installed via npm:
+
+```bash
+npm uninstall -g @universal-claude-router/cli
+```
+
+### If installed via install.sh:
+
+```bash
+npm unlink -g @universal-claude-router/cli
+rm -rf ~/.ucr
 ```
 
 ## 📦 Project Structure
