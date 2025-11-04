@@ -89,7 +89,7 @@ npm run publish:npm
 **Requirements**:
 
 - Logged into npm (`npm login`)
-- Publishing permissions for `@universal-claude-router/cli`
+- Publishing permissions for `universal-claude-router-cli`
 
 **When to use**:
 
