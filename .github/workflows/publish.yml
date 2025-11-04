@@ -56,7 +56,7 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           npm config set registry https://registry.npmjs.org/
-          npm config set //registry.npmjs.org/:always-auth true
+          npm set always-auth true
           # verify auth file (only prints path and a masked token)
           echo "Wrote ~/.npmrc with registry auth"
 
