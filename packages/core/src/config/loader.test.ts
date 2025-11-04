@@ -14,9 +14,9 @@ describe('Config Loader with OAuth Support', () => {
     // Create a temporary directory for test files
     testDir = join(tmpdir(), `ucr-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
-    
+
     configPath = join(testDir, 'test-config.json');
-    
+
     // Setup credentials directory
     const credentialsDir = join(testDir, '.ucr');
     await mkdir(credentialsDir, { recursive: true });
@@ -165,7 +165,7 @@ describe('Config Loader with OAuth Support', () => {
 
     // Try to load config and expect error with custom credentials path
     await expect(loadConfigFromFile(configPath, { storePath: credentialsPath })).rejects.toThrow(
-      /OAuth token for provider 'github-copilot' not found.*ucr auth login github-copilot/
+      /OAuth token for provider 'github-copilot' not found.*ucr auth login github-copilot/,
     );
   });
 
@@ -191,7 +191,7 @@ describe('Config Loader with OAuth Support', () => {
 
     // Try to load config and expect error
     await expect(loadConfigFromFile(configPath)).rejects.toThrow(
-      /Environment variable MISSING_API_KEY is not defined/
+      /Environment variable MISSING_API_KEY is not defined/,
     );
   });
 

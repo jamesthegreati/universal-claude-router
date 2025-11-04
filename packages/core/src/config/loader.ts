@@ -70,10 +70,10 @@ async function loadOAuthTokens(config: any, storePath?: string): Promise<any> {
       const match = provider.apiKey.match(/\$\{([^}]+)\}/);
       if (match) {
         const providerId = provider.id;
-        
+
         // Try to get token from TokenStore
         const credential = await tokenStore.get(providerId);
-        
+
         if (credential && credential.accessToken) {
           // Replace the placeholder with the actual token
           provider.apiKey = credential.accessToken;
@@ -81,7 +81,7 @@ async function loadOAuthTokens(config: any, storePath?: string): Promise<any> {
           // Token not found - provide helpful error message
           throw new Error(
             `OAuth token for provider '${providerId}' not found. ` +
-            `Please run: ucr auth login ${providerId}`
+              `Please run: ucr auth login ${providerId}`,
           );
         }
       }
@@ -94,7 +94,10 @@ async function loadOAuthTokens(config: any, storePath?: string): Promise<any> {
 /**
  * Load configuration from a JSON file
  */
-export async function loadConfigFromFile(filePath: string, options?: { storePath?: string }): Promise<UCRConfig> {
+export async function loadConfigFromFile(
+  filePath: string,
+  options?: { storePath?: string },
+): Promise<UCRConfig> {
   try {
     const absolutePath = resolve(filePath);
     const content = await readFile(absolutePath, 'utf-8');
