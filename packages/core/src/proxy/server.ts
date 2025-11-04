@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
+import compress from '@fastify/compress';
 import type { UCRConfig } from '@ucr/shared';
 import { getLogger, initLogger } from '../utils/logger.js';
 import { UCRError } from '../utils/error.js';
@@ -16,17 +17,32 @@ export async function createServer(config: UCRConfig) {
   // Initialize logger
   const logger = initLogger(loggingConfig);
 
-  // Create Fastify instance
+  // Create Fastify instance with performance optimizations
   const app = Fastify({
     logger: logger as any,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'requestId',
+    // Performance optimizations
+    disableRequestLogging: loggingConfig.level === 'error' || loggingConfig.level === 'warn',
+    trustProxy: true,
+    keepAliveTimeout: 72000, // 72 seconds
+    connectionTimeout: 30000, // 30 seconds
+    bodyLimit: 1048576, // 1MB
+    caseSensitive: false,
+    ignoreTrailingSlash: true,
   });
 
   // Register CORS
   await app.register(cors, {
     origin: serverConfig.cors?.origin || '*',
     credentials: serverConfig.cors?.credentials ?? true,
+  });
+
+  // Register compression for better network performance
+  await app.register(compress, {
+    global: true,
+    threshold: 1024, // Only compress responses > 1KB
+    encodings: ['gzip', 'deflate'],
   });
 
   // Register rate limiting

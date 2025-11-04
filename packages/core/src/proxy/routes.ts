@@ -6,6 +6,10 @@ import { getTransformerRegistry } from '../transformer/registry.js';
 import { makeHttpRequest, makeStreamingRequest } from '../utils/http.js';
 import { RequestValidationError, ProviderError } from '../utils/error.js';
 import { getLogger } from '../utils/logger.js';
+import { responseCache } from '../cache/response-cache.js';
+import { cacheManager } from '../cache/cache-manager.js';
+import { metadataCache } from '../cache/metadata-cache.js';
+import { metrics } from '../utils/metrics.js';
 
 /**
  * Setup API routes
@@ -21,6 +25,8 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
   app.post('/v1/messages', async (request, reply) => {
     const startTime = Date.now();
     const requestId = request.id;
+    let cacheHit = false;
+    let isError = false;
 
     try {
       // Parse and validate request
@@ -33,6 +39,22 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
         model: claudeRequest.model,
         stream: claudeRequest.stream,
       });
+
+      // Check cache for non-streaming requests
+      if (!claudeRequest.stream) {
+        const cachedResponse = await responseCache.get(claudeRequest);
+        if (cachedResponse) {
+          cacheHit = true;
+          const duration = Date.now() - startTime;
+          metrics.recordRequest(duration, true, false, false);
+          logger.info({
+            type: 'cache_hit',
+            requestId,
+            duration,
+          });
+          return cachedResponse;
+        }
+      }
 
       // Route the request
       const routeResult = await router.route(claudeRequest);
@@ -91,6 +113,7 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
         }
 
         const duration = Date.now() - startTime;
+        metrics.recordRequest(duration, false, true, false);
         logger.info({
           type: 'request_completed',
           requestId,
@@ -122,7 +145,11 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       // Transform response
       const claudeResponse = await transformer.transformResponse(response.body, claudeRequest);
 
+      // Cache the response
+      await responseCache.set(claudeRequest, claudeResponse);
+
       const duration = Date.now() - startTime;
+      metrics.recordRequest(duration, false, false, false);
       logger.info({
         type: 'request_completed',
         requestId,
@@ -136,6 +163,8 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       return claudeResponse;
     } catch (error) {
       const duration = Date.now() - startTime;
+      const claudeRequest = request.body as ClaudeCodeRequest;
+      metrics.recordRequest(duration, cacheHit, claudeRequest?.stream || false, true);
       logger.error({
         type: 'request_failed',
         requestId,
@@ -170,6 +199,30 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       providers: config.providers.length,
       router: config.router,
       features: config.features,
+    };
+  });
+
+  /**
+   * Performance metrics and diagnostics endpoint
+   */
+  app.get('/debug/metrics', async () => {
+    const memUsage = process.memoryUsage();
+
+    return {
+      performance: metrics.getStats(),
+      memory: {
+        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024) + ' MB',
+        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024) + ' MB',
+        external: Math.round(memUsage.external / 1024 / 1024) + ' MB',
+        rss: Math.round(memUsage.rss / 1024 / 1024) + ' MB',
+      },
+      cache: {
+        manager: cacheManager.getStats(),
+        response: responseCache.getStats(),
+        metadata: metadataCache.getStats(),
+      },
+      uptime: process.uptime(),
+      timestamp: Date.now(),
     };
   });
 }

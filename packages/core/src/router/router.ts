@@ -3,6 +3,8 @@ import { countRequestTokens } from '@ucr/shared';
 import { detectTaskType } from './task-detector.js';
 import { RouterError } from '../utils/error.js';
 import { getLogger } from '../utils/logger.js';
+import { fastPathRouter } from './fast-path.js';
+import { requestCoalescer } from '../utils/performance.js';
 
 /**
  * Router for selecting providers based on task type and configuration
@@ -21,9 +23,27 @@ export class Router {
   async route(request: ClaudeCodeRequest): Promise<RouteResult> {
     const logger = getLogger();
 
-    // Detect task type
-    const taskType = detectTaskType(request);
-    const tokenCount = countRequestTokens(request);
+    // Try fast path for simple requests
+    if (fastPathRouter.canUseFastPath(request)) {
+      const cachedProvider = fastPathRouter.getFastPath(request);
+      if (cachedProvider && cachedProvider.enabled !== false) {
+        const taskType = detectTaskType(request);
+        const tokenCount = countRequestTokens(request);
+        return {
+          provider: cachedProvider,
+          model: cachedProvider.defaultModel || request.model,
+          reason: 'fast_path',
+          taskType,
+          tokenCount,
+        };
+      }
+    }
+
+    // Run task detection and token counting in parallel
+    const [taskType, tokenCount] = await Promise.all([
+      Promise.resolve(detectTaskType(request)),
+      Promise.resolve(countRequestTokens(request)),
+    ]);
 
     logger.debug({
       type: 'routing',
@@ -69,13 +89,20 @@ export class Router {
       });
     }
 
-    return {
+    const result: RouteResult = {
       provider,
       model: provider.defaultModel || request.model,
       reason: `task_routing:${taskType}`,
       taskType,
       tokenCount,
     };
+
+    // Cache in fast path if eligible
+    if (fastPathRouter.canUseFastPath(request)) {
+      fastPathRouter.setFastPath(request, provider);
+    }
+
+    return result;
   }
 
   /**

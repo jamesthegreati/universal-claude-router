@@ -1,6 +1,17 @@
-import { request } from 'undici';
+import { request, Agent } from 'undici';
 import type { HttpMethod } from '@ucr/shared';
 import { TimeoutError, ProviderError } from './error.js';
+
+// Global connection pool for maximum performance
+const agent = new Agent({
+  connections: 100, // Max concurrent connections
+  pipelining: 10, // Requests per connection
+  keepAliveTimeout: 60000, // 60 seconds
+  keepAliveMaxTimeout: 600000, // 10 minutes
+  bodyTimeout: 30000,
+  headersTimeout: 10000,
+  maxCachedSessions: 100,
+});
 
 export interface HttpRequestOptions {
   method: HttpMethod;
@@ -41,6 +52,7 @@ export async function makeHttpRequest<T = unknown>(
       },
       body: body ? JSON.stringify(body) : undefined,
       signal: combinedSignal,
+      dispatcher: agent,
     });
 
     if (timeoutId) {
@@ -91,6 +103,7 @@ export async function makeStreamingRequest(options: HttpRequestOptions): Promise
       },
       body: body ? JSON.stringify(body) : undefined,
       signal: combinedSignal,
+      dispatcher: agent,
     });
 
     if (timeoutId) {
