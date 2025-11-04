@@ -26,9 +26,9 @@ export class GitHubCopilotTransformer extends BaseTransformer {
 
     const headers = {
       Authorization: `Bearer ${provider.apiKey}`,
-      'Editor-Version': 'vscode/1.85.0',
-      'Editor-Plugin-Version': 'copilot-chat/0.11.1',
-      'User-Agent': 'GitHubCopilotChat/0.11.1',
+      'Editor-Version': provider.metadata?.editorVersion || 'vscode/1.85.0',
+      'Editor-Plugin-Version': provider.metadata?.pluginVersion || 'copilot-chat/0.11.1',
+      'User-Agent': provider.metadata?.userAgent || 'GitHubCopilotChat/0.11.1',
       ...provider.headers,
     };
 
@@ -50,8 +50,8 @@ export class GitHubCopilotTransformer extends BaseTransformer {
       model: this.getModelName(request, provider),
       messages,
       max_tokens: request.max_tokens,
-      temperature: request.temperature ?? 1,
-      top_p: request.top_p ?? 1,
+      temperature: request.temperature ?? 0.3,
+      top_p: request.top_p ?? 0.9,
       stream: request.stream || false,
       n: 1,
     };

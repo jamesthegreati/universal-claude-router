@@ -291,6 +291,7 @@ export const setupCommand = new Command('setup')
         if (provider !== 'ollama') {
           const envVar = providerTemplates[provider]?.apiKey?.match(/\$\{(.+?)\}/)?.[1];
           if (envVar) {
+            // Log the environment variable NAME only (not the actual key value)
             console.log(chalk.dim(`   export ${envVar}="your-api-key"`));
           }
         }

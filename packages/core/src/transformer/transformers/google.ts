@@ -23,7 +23,9 @@ export class GoogleTransformer extends BaseTransformer {
     body: unknown;
   }> {
     const modelName = this.getModelName(request, provider);
-    const isVertexAI = provider.baseUrl.includes('googleapis.com');
+    // Check if provider is Vertex AI by validating the full URL pattern
+    const isVertexAI = provider.baseUrl.startsWith('https://') && 
+                       provider.baseUrl.endsWith('.googleapis.com');
 
     // Vertex AI uses generateContent endpoint
     const endpoint = isVertexAI

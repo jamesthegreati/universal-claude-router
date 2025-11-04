@@ -101,6 +101,10 @@ export interface ProviderMetadata {
   modelVersion?: string;
   // Together-specific
   repetitionPenalty?: number;
+  // GitHub Copilot-specific
+  editorVersion?: string;
+  pluginVersion?: string;
+  userAgent?: string;
   // Generic metadata
   [key: string]: unknown;
 }
