@@ -28,12 +28,20 @@ export const startCommand = new Command('start')
       process.exit(1);
     }
 
-    // Find the server binary - try multiple possible locations
+    // Find the server binary - try multiple possible locations relative to this CLI
     const possibleServerPaths = [
-      resolve(__dirname, '../../../core/dist/bin/server.js'),
-      resolve(__dirname, '../../core/dist/bin/server.js'),
-      '/usr/local/lib/node_modules/@universal-claude-router/cli/packages/core/dist/bin/server.js',
+      resolve(__dirname, '../../../core/dist/bin/server.js'), // monorepo development
+      resolve(__dirname, '../../core/dist/bin/server.js'), // alternative structure
     ];
+
+    // Also try to find via node_modules if installed globally
+    try {
+      // When installed globally, look for the server in the installed package
+      const globalPath = resolve(__dirname, '../../packages/core/dist/bin/server.js');
+      possibleServerPaths.push(globalPath);
+    } catch {
+      // Ignore if path doesn't exist
+    }
 
     let serverPath: string | null = null;
     for (const path of possibleServerPaths) {

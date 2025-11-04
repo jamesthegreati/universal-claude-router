@@ -20,8 +20,8 @@ if ! command -v git &> /dev/null; then
   exit 1
 fi
 
-# Installation directory
-INSTALL_DIR="$HOME/.ucr"
+# Installation directory (can be overridden via UCR_INSTALL_DIR environment variable)
+INSTALL_DIR="${UCR_INSTALL_DIR:-$HOME/.ucr}"
 REPO_DIR="$INSTALL_DIR/repo"
 REPO_URL="https://github.com/jamesthegreati/universal-claude-router.git"
 
