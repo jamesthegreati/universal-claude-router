@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { loadConfig } from '@ucr/core';
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
+import { syncAuthToConfig } from '../utils/config-sync.js';
 
 export const configCommand = new Command('config').description('Manage configuration');
 
@@ -223,4 +224,19 @@ configCommand
         process.exit(code || 1);
       }
     });
+  });
+
+// config sync
+configCommand
+  .command('sync')
+  .argument('[path]', 'Config file path', 'ucr.config.json')
+  .description('Sync authenticated providers to config')
+  .action(async (path: string) => {
+    try {
+      await syncAuthToConfig(path);
+      console.log(chalk.green('✓ Configuration synced with authenticated providers'));
+    } catch (error) {
+      console.error(chalk.red(`Error syncing config: ${error}`));
+      process.exit(1);
+    }
   });
