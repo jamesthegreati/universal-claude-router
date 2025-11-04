@@ -1,0 +1,14 @@
+{
+  "id": "deepseek",
+  "name": "DeepSeek",
+  "baseUrl": "https://api.deepseek.com",
+  "apiKey": "${DEEPSEEK_API_KEY}",
+  "authType": "bearerToken",
+  "defaultModel": "deepseek-chat",
+  "enabled": true,
+  "priority": 6,
+  "models": [
+    "deepseek-chat",
+    "deepseek-coder"
+  ]
+}

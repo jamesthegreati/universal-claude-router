@@ -82,6 +82,27 @@ export interface ProviderMetadata {
   description?: string;
   website?: string;
   documentation?: string;
+  // Google-specific
+  projectId?: string;
+  location?: string;
+  // Mistral-specific
+  safePrompt?: boolean;
+  // OpenRouter-specific
+  siteUrl?: string;
+  siteName?: string;
+  transforms?: string[];
+  route?: string;
+  // Perplexity-specific
+  searchDomainFilter?: string[];
+  searchRecencyFilter?: string;
+  returnImages?: boolean;
+  returnRelatedQuestions?: boolean;
+  // Replicate-specific
+  modelVersion?: string;
+  // Together-specific
+  repetitionPenalty?: number;
+  // Generic metadata
+  [key: string]: unknown;
 }
 
 /**

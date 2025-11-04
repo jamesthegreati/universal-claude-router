@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "cors": {
+      "origin": "*",
+      "credentials": true
+    }
+  },
+  "logging": {
+    "level": "info",
+    "pretty": true
+  },
+  "providers": [
+    {
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
+      "baseUrl": "https://api.githubcopilot.com",
+      "apiKey": "${GITHUB_COPILOT_TOKEN}",
+      "authType": "oauth",
+      "defaultModel": "gpt-4",
+      "enabled": true,
+      "priority": 10
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic Claude",
+      "baseUrl": "https://api.anthropic.com",
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "defaultModel": "claude-3-5-sonnet-20241022",
+      "enabled": true,
+      "priority": 9
+    }
+  ],
+  "router": {
+    "default": "github-copilot",
+    "think": "anthropic"
+  },
+  "features": {
+    "costTracking": true,
+    "analytics": true,
+    "healthChecks": true
+  }
+}

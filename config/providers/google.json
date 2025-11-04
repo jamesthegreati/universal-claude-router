@@ -1,0 +1,14 @@
+{
+  "id": "google",
+  "name": "Google Gemini",
+  "baseUrl": "https://generativelanguage.googleapis.com",
+  "apiKey": "${GOOGLE_API_KEY}",
+  "authType": "apiKey",
+  "defaultModel": "gemini-pro",
+  "enabled": true,
+  "priority": 7,
+  "models": [
+    "gemini-pro",
+    "gemini-pro-vision"
+  ]
+}

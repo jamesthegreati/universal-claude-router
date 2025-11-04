@@ -67,6 +67,11 @@ export async function loadConfigFromFile(
 }
 
 /**
+ * Alias for loadConfigFromFile for CLI convenience
+ */
+export const loadConfig = loadConfigFromFile;
+
+/**
  * Load configuration from environment variables
  */
 export function loadConfigFromEnv(): Partial<UCRConfig> {
