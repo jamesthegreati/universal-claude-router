@@ -37,7 +37,8 @@ export const codeCommand = new Command('code')
     try {
       config = await loadConfig(configPath);
     } catch (error) {
-      console.error(chalk.red(`❌ Failed to load config: ${error}`));
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(chalk.red(`❌ Failed to load config: ${errorMessage}`));
       process.exit(1);
     }
 

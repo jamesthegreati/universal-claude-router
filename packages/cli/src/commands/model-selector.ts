@@ -84,7 +84,8 @@ export const modelSelectorCommand = new Command('model')
     try {
       config = await loadConfig(configPath);
     } catch (error) {
-      console.error(chalk.red(`❌ Failed to load config: ${error}`));
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(chalk.red(`❌ Failed to load config: ${errorMessage}`));
       console.log(chalk.dim('\nRun `ucr setup` to create a configuration file.'));
       process.exit(1);
     }
