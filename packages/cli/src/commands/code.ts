@@ -12,7 +12,8 @@ export const codeCommand = new Command('code')
   .description('Launch Claude Code with UCR (auto-starts server)')
   .option('-c, --config <path>', 'Path to config file', 'ucr.config.json')
   .allowUnknownOption()
-  .action(async (options, command) => {
+  .allowExcessArguments()
+  .action(async (options, command: Command) => {
     const configPath = resolve(process.cwd(), options.config);
 
     // Check if config exists
@@ -81,11 +82,9 @@ export const codeCommand = new Command('code')
     // Check if claude command exists
     const claudeCommand = 'claude';
 
-    // Get all arguments after 'code' command
-    const claudeArgs = process.argv.slice(process.argv.indexOf('code') + 1).filter((arg) => {
-      // Filter out UCR-specific options
-      return arg !== '-c' && arg !== '--config' && arg !== configPath;
-    });
+    // Get all arguments passed to the code command (excluding UCR-specific options)
+    // Commander.js stores unknown arguments in command.args
+    const claudeArgs = command.args || [];
 
     console.log(chalk.dim(`Launching: ${claudeCommand} ${claudeArgs.join(' ')}\n`));
 

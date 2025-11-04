@@ -1,4 +1,5 @@
 import type { Provider } from '@ucr/shared';
+import { AuthType } from '@ucr/shared';
 
 /**
  * Provider templates for config generation
@@ -31,7 +32,7 @@ export const PROVIDER_TEMPLATES: Record<string, Omit<Provider, 'apiKey'>> = {
     id: 'github-copilot',
     name: 'GitHub Copilot',
     baseUrl: 'https://api.githubcopilot.com',
-    authType: 'oauth' as any,
+    authType: AuthType.OAUTH,
     defaultModel: 'gpt-4',
     models: ['gpt-4', 'gpt-3.5-turbo'],
     enabled: true,
