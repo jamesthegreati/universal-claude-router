@@ -63,16 +63,14 @@ async function loadOAuthTokens(config: any, storePath?: string): Promise<any> {
   const tokenStore = new TokenStore(storePath);
   await tokenStore.init();
 
-  // Load tokens for OAuth providers
-  for (const provider of providers) {
-    if (provider.authType === 'oauth' && provider.apiKey && provider.apiKey.includes('${')) {
+  // Load tokens for OAuth providers only
+  for (const provider of oauthProviders) {
+    if (provider.apiKey && provider.apiKey.includes('${')) {
       // Extract the placeholder variable name
       const match = provider.apiKey.match(/\$\{([^}]+)\}/);
       if (match) {
-        const providerId = provider.id;
-
         // Try to get token from TokenStore
-        const credential = await tokenStore.get(providerId);
+        const credential = await tokenStore.get(provider.id);
 
         if (credential && credential.accessToken) {
           // Replace the placeholder with the actual token
@@ -80,8 +78,8 @@ async function loadOAuthTokens(config: any, storePath?: string): Promise<any> {
         } else {
           // Token not found - provide helpful error message
           throw new Error(
-            `OAuth token for provider '${providerId}' not found. ` +
-              `Please run: ucr auth login ${providerId}`,
+            `OAuth token for provider '${provider.id}' not found. ` +
+              `Please run: ucr auth login ${provider.id}`,
           );
         }
       }
@@ -103,8 +101,8 @@ export async function loadConfigFromFile(
     const content = await readFile(absolutePath, 'utf-8');
     const rawConfig = JSON.parse(content);
 
-    // First pass: Interpolate environment variables, but skip missing ones for OAuth providers
-    // We need to check authType before interpolating, so we do a partial interpolation
+    // First pass: Interpolate environment variables, but skip missing ones
+    // This preserves placeholders for OAuth providers that will be loaded from TokenStore
     const partiallyInterpolated = interpolateObject(rawConfig, true);
 
     // Load OAuth tokens from TokenStore for OAuth providers
