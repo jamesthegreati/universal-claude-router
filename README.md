@@ -50,7 +50,7 @@ Universal Claude Router (UCR) combines the best features from
 ### Option 1: NPM Global Install (Recommended)
 
 ```bash
-npm install -g @universal-claude-router/cli
+npm install -g universal-claude-router-cli
 ```
 
 ### Option 2: One-Line Installer
@@ -150,7 +150,7 @@ claude-code
 ### If installed via npm:
 
 ```bash
-npm update -g @universal-claude-router/cli
+npm update -g universal-claude-router-cli
 ```
 
 ### If installed via install.sh:
@@ -164,13 +164,13 @@ curl -fsSL https://raw.githubusercontent.com/jamesthegreati/universal-claude-rou
 ### If installed via npm:
 
 ```bash
-npm uninstall -g @universal-claude-router/cli
+npm uninstall -g universal-claude-router-cli
 ```
 
 ### If installed via install.sh:
 
 ```bash
-npm unlink -g @universal-claude-router/cli
+npm unlink -g universal-claude-router-cli
 rm -rf ~/.ucr
 ```
 

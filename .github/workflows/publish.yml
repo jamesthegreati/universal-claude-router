@@ -49,6 +49,13 @@ jobs:
           echo "=== Package contents preview ==="
           npm pack --dry-run
 
+      - name: Verify npm auth and package
+        run: |
+          echo "Registry: $(npm config get registry)"
+          npm whoami || (echo "ERROR: not authenticated to npm. Check NPM_TOKEN" && exit 1)
+          echo "Package name: $(node -p "require('./package.json').name")"
+          echo "Package version: $(node -p "require('./package.json').version")"
+
       # Extra safeguard: explicitly write a minimal ~/.npmrc using the secret (harmless if setup-node already wrote it)
       - name: Configure npm auth (explicit)
         env:

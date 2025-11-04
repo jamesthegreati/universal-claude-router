@@ -1,5 +1,5 @@
 {
-  "name": "@universal-claude-router/cli",
+  "name": "universal-claude-router-cli",
   "version": "0.1.0",
   "description": "Universal Claude Router - Route Claude Code to 75+ LLM providers",
   "keywords": [
@@ -47,6 +47,7 @@
     "npm": ">=9.0.0"
   },
   "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "scripts": {

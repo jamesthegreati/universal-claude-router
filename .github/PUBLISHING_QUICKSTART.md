@@ -60,7 +60,7 @@ npm run publish:npm
 1. GitHub Actions workflow starts automatically
 2. Runs tests and builds
 3. Publishes to npm with provenance
-4. Package becomes available: `npm install -g @universal-claude-router/cli`
+4. Package becomes available: `npm install -g universal-claude-router-cli`
 
 ## Monitoring the Publish
 
@@ -70,10 +70,10 @@ Watch the workflow at: https://github.com/jamesthegreati/universal-claude-router
 
 ```bash
 # Check it's available
-npm view @universal-claude-router/cli
+npm view universal-claude-router-cli
 
 # Install and test
-npm install -g @universal-claude-router/cli
+npm install -g universal-claude-router-cli
 ucr --version
 ```
 

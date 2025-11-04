@@ -16,11 +16,9 @@ This ensures consistent, secure, and auditable releases.
    - Visit https://www.npmjs.com/signup
    - Complete the registration
 
-2. **Verify ownership of the scope**:
-   - The package is scoped as `@universal-claude-router/cli`
-   - You need to either:
-     - Create the organization on npm: https://www.npmjs.com/org/create
-     - Or have the existing organization owner add you as a member
+2. **Verify publishing permissions**:
+   - The package is named `universal-claude-router-cli` (unscoped)
+   - Any npm account can publish unscoped packages with unique names
 
 ### Step 2: Generate npm Access Token
 
@@ -74,7 +72,7 @@ Follow the prompts:
 Within a few minutes, your package will be available:
 
 ```bash
-npm install -g @universal-claude-router/cli
+npm install -g universal-claude-router-cli
 ```
 
 ## Publishing Subsequent Releases
@@ -115,27 +113,17 @@ npm run release
 
 **Solution**:
 
-1. Verify you have permissions for the `@universal-claude-router` scope
+1. Verify your npm account has publish permissions
 2. Check the token type is "Automation" (not "Read-only")
 3. Regenerate the token with proper permissions
-
-### "404 Not Found" for the scope
-
-**Cause**: The `@universal-claude-router` organization doesn't exist on npm.
-
-**Solution**:
-
-1. Create the organization: https://www.npmjs.com/org/create
-2. Name it exactly: `universal-claude-router`
-3. Add yourself as a member with publish permissions
 
 ### Package name already taken
 
 **Cause**: Someone else owns the package name.
 
-**Solution**: If `@universal-claude-router/cli` is taken, you'll need to:
+**Solution**: If `universal-claude-router-cli` is taken, you'll need to:
 
-1. Choose a different scope/name
+1. Choose a different package name
 2. Update `package.json` with the new name
 3. Update all documentation
 
@@ -170,7 +158,6 @@ npm run release
 Before attempting your first publish, ensure:
 
 - [ ] npm account created
-- [ ] `@universal-claude-router` organization created/access granted on npm
 - [ ] npm Automation token generated
 - [ ] `NPM_TOKEN` secret added to GitHub repository
 - [ ] Repository cloned locally

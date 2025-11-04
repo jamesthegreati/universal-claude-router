@@ -4,8 +4,7 @@ This document explains how to publish the Universal Claude Router package to npm
 
 ## Prerequisites
 
-1. **npm Account**: You need an npm account with publishing permissions for the
-   `@universal-claude-router` scope.
+1. **npm Account**: You need an npm account with publishing permissions.
 2. **GitHub Secrets**: The `NPM_TOKEN` secret must be configured in the GitHub repository.
 
 ## Setting up NPM_TOKEN
@@ -112,13 +111,13 @@ After publishing, verify the package:
 1. **Check npm registry**:
 
    ```bash
-   npm view @universal-claude-router/cli
+   npm view universal-claude-router-cli
    ```
 
 2. **Test global installation**:
 
    ```bash
-   npm install -g @universal-claude-router/cli
+   npm install -g universal-claude-router-cli
    ucr --version
    ```
 
@@ -126,7 +125,7 @@ After publishing, verify the package:
    ```bash
    mkdir test-ucr && cd test-ucr
    npm init -y
-   npm install @universal-claude-router/cli
+   npm install universal-claude-router-cli
    npx ucr --help
    ```
 
