@@ -6,24 +6,28 @@ on:
       - 'v*.*.*'  # Trigger on version tags like v0.1.0, v1.0.0, etc.
   workflow_dispatch:  # Allow manual trigger
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write  # Required for npm provenance
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js (with auth)
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+          # Use the repository secret to let setup-node create an authenticated .npmrc
+          auth-token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
@@ -45,10 +49,24 @@ jobs:
           echo "=== Package contents preview ==="
           npm pack --dry-run
 
+      # Extra safeguard: explicitly write a minimal ~/.npmrc using the secret (harmless if setup-node already wrote it)
+      - name: Configure npm auth (explicit)
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npm config set registry https://registry.npmjs.org/
+          npm config set //registry.npmjs.org/:always-auth true
+          # verify auth file (only prints path and a masked token)
+          echo "Wrote ~/.npmrc with registry auth"
+
       - name: Publish to npm
-        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # If publishing a scoped package and you want it public, keep --access public
+          # Remove --access public for private packages.
+          npm publish --provenance --access public
 
       - name: Create release summary
         run: |
