@@ -14,12 +14,29 @@ export async function createServer(config: UCRConfig) {
   const serverConfig = config.server || {};
   const loggingConfig = config.logging || {};
 
-  // Initialize logger
-  const logger = initLogger(loggingConfig);
+  // Initialize external logger for UCR-specific logging
+  initLogger(loggingConfig);
+
+  // Configure Fastify logger
+  const fastifyLoggerConfig: any = loggingConfig.pretty
+    ? {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'SYS:standard',
+            ignore: 'pid,hostname',
+          },
+        },
+        level: loggingConfig.level || 'info',
+      }
+    : {
+        level: loggingConfig.level || 'info',
+      };
 
   // Create Fastify instance with performance optimizations
   const app = Fastify({
-    logger: logger as any,
+    logger: fastifyLoggerConfig,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'requestId',
     // Performance optimizations
@@ -28,8 +45,11 @@ export async function createServer(config: UCRConfig) {
     keepAliveTimeout: 72000, // 72 seconds
     connectionTimeout: 30000, // 30 seconds
     bodyLimit: 1048576, // 1MB
-    caseSensitive: false,
-    ignoreTrailingSlash: true,
+    // Router options (fastify v5+)
+    routerOptions: {
+      caseSensitive: false,
+      ignoreTrailingSlash: true,
+    },
   });
 
   // Register CORS
@@ -59,7 +79,7 @@ export async function createServer(config: UCRConfig) {
       return reply.status(error.statusCode).send(error.toJSON());
     }
 
-    logger.error({
+    getLogger().error({
       type: 'server_error',
       error: {
         message: error.message,
