@@ -313,6 +313,7 @@ npm run release
 ```
 
 This will:
+
 1. Bump the version (patch/minor/major)
 2. Create a git tag
 3. Push to GitHub

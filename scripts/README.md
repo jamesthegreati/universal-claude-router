@@ -9,6 +9,7 @@ This directory contains utility scripts for managing the Universal Claude Router
 **Purpose**: Create and publish a new release
 
 **Usage**:
+
 ```bash
 npm run release
 # or
@@ -16,6 +17,7 @@ npm run release
 ```
 
 **What it does**:
+
 1. Checks that your git working directory is clean
 2. Shows the current version
 3. Prompts you to select version bump type (patch/minor/major) or specify a custom version
@@ -26,10 +28,12 @@ npm run release
 8. Triggers the GitHub Actions publish workflow
 
 **Requirements**:
+
 - Clean git working directory (no uncommitted changes)
 - Push access to the main branch
 
 **Example output**:
+
 ```
 ========================================
 Universal Claude Router - Release Script
@@ -64,6 +68,7 @@ Push changes and tag to trigger publish? (yes/no): yes
 **Purpose**: Manually publish the package to npm (not recommended for production use)
 
 **Usage**:
+
 ```bash
 npm run publish:npm
 # or
@@ -71,6 +76,7 @@ npm run publish:npm
 ```
 
 **What it does**:
+
 1. Verifies you're logged into npm
 2. Cleans previous builds
 3. Installs dependencies
@@ -81,15 +87,18 @@ npm run publish:npm
 8. Publishes to npm
 
 **Requirements**:
+
 - Logged into npm (`npm login`)
 - Publishing permissions for `@universal-claude-router/cli`
 
 **When to use**:
+
 - Emergency hotfixes
 - Testing publish process locally
 - When GitHub Actions is unavailable
 
-**⚠️ Warning**: For production releases, prefer using `release.sh` which triggers the automated GitHub Actions workflow.
+**⚠️ Warning**: For production releases, prefer using `release.sh` which triggers the automated
+GitHub Actions workflow.
 
 ---
 
@@ -98,6 +107,7 @@ npm run publish:npm
 **Purpose**: Quick setup for development or testing
 
 **Usage**:
+
 ```bash
 ./scripts/quick-start.sh
 ```
@@ -109,6 +119,7 @@ npm run publish:npm
 **Purpose**: Performance benchmarking
 
 **Usage**:
+
 ```bash
 # First compile it
 npx ts-node scripts/benchmark.ts
@@ -121,6 +132,7 @@ npx ts-node scripts/benchmark.ts
 **Purpose**: Load testing for the proxy server
 
 **Usage**:
+
 ```bash
 ./scripts/load-test.sh
 ```
@@ -144,6 +156,7 @@ npm run release
 ```
 
 The GitHub Actions workflow will:
+
 - Run tests
 - Build the project
 - Publish to npm
@@ -166,6 +179,7 @@ npm run publish:npm
 ### "Git working directory is not clean"
 
 Commit or stash your changes:
+
 ```bash
 git status
 git add .
@@ -177,6 +191,7 @@ git stash
 ### "Not logged into npm"
 
 Log in to npm:
+
 ```bash
 npm login
 ```
@@ -184,6 +199,7 @@ npm login
 ### "Permission denied"
 
 Make the script executable:
+
 ```bash
 chmod +x scripts/release.sh
 chmod +x scripts/publish.sh

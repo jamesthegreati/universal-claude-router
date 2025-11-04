@@ -4,7 +4,8 @@ This document explains how to publish the Universal Claude Router package to npm
 
 ## Prerequisites
 
-1. **npm Account**: You need an npm account with publishing permissions for the `@universal-claude-router` scope.
+1. **npm Account**: You need an npm account with publishing permissions for the
+   `@universal-claude-router` scope.
 2. **GitHub Secrets**: The `NPM_TOKEN` secret must be configured in the GitHub repository.
 
 ## Setting up NPM_TOKEN
@@ -25,6 +26,7 @@ The repository uses GitHub Actions to automatically publish to npm when a versio
 **Steps:**
 
 1. **Update the version** in `package.json`:
+
    ```bash
    npm version patch  # For bug fixes (0.1.0 -> 0.1.1)
    npm version minor  # For new features (0.1.0 -> 0.2.0)
@@ -32,16 +34,18 @@ The repository uses GitHub Actions to automatically publish to npm when a versio
    ```
 
 2. **Push the version tag** to GitHub:
+
    ```bash
    git push origin main --follow-tags
    ```
 
-3. **Monitor the workflow**: 
+3. **Monitor the workflow**:
    - Go to the "Actions" tab in GitHub
    - Watch the "Publish to NPM" workflow run
    - The package will be automatically published to npm
 
 **What the workflow does:**
+
 - Checks out the code
 - Installs dependencies
 - Runs type checking
@@ -58,11 +62,13 @@ If you need to publish manually (not recommended for production), you can use th
 **Steps:**
 
 1. **Ensure you're logged into npm**:
+
    ```bash
    npm login
    ```
 
 2. **Run the publish script**:
+
    ```bash
    npm run publish:npm
    ```
@@ -104,11 +110,13 @@ Before publishing a new version:
 After publishing, verify the package:
 
 1. **Check npm registry**:
+
    ```bash
    npm view @universal-claude-router/cli
    ```
 
 2. **Test global installation**:
+
    ```bash
    npm install -g @universal-claude-router/cli
    ucr --version
