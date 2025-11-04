@@ -21,9 +21,7 @@ export const startCommand = new Command('start')
     try {
       await fs.access(configPath);
     } catch {
-      console.error(
-        chalk.red(`❌ Configuration file not found: ${configPath}`),
-      );
+      console.error(chalk.red(`❌ Configuration file not found: ${configPath}`));
       console.log(chalk.dim('\nRun `ucr setup` to create a configuration file.'));
       process.exit(1);
     }
@@ -55,9 +53,7 @@ export const startCommand = new Command('start')
     }
 
     if (!serverPath) {
-      console.error(
-        chalk.red('❌ Server binary not found. Please build the project first.'),
-      );
+      console.error(chalk.red('❌ Server binary not found. Please build the project first.'));
       console.log(chalk.dim('\nRun `npm run build` from the project root.'));
       process.exit(1);
     }
