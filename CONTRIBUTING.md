@@ -1,16 +1,19 @@
 # Contributing to Universal Claude Router
 
-Thank you for your interest in contributing to Universal Claude Router! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Universal Claude Router! This document provides
+guidelines and instructions for contributing.
 
 ## Code of Conduct
 
-Please be respectful and constructive in all interactions. We aim to foster an inclusive and welcoming community.
+Please be respectful and constructive in all interactions. We aim to foster an inclusive and
+welcoming community.
 
 ## How to Contribute
 
 ### Reporting Bugs
 
-1. Check if the bug has already been reported in [GitHub Issues](https://github.com/jamesthegreati/universal-claude-router/issues)
+1. Check if the bug has already been reported in
+   [GitHub Issues](https://github.com/jamesthegreati/universal-claude-router/issues)
 2. If not, create a new issue with:
    - Clear title and description
    - Steps to reproduce
@@ -20,7 +23,8 @@ Please be respectful and constructive in all interactions. We aim to foster an i
 
 ### Suggesting Features
 
-1. Check [GitHub Discussions](https://github.com/jamesthegreati/universal-claude-router/discussions) for similar ideas
+1. Check [GitHub Discussions](https://github.com/jamesthegreati/universal-claude-router/discussions)
+   for similar ideas
 2. Open a new discussion to propose your feature
 3. Explain the use case and benefits
 4. Be open to feedback and iteration
@@ -187,7 +191,9 @@ export class MyProviderTransformer extends BaseTransformer {
       url: `${provider.baseUrl}/v1/chat`,
       method: 'POST',
       headers: this.buildAuthHeader(provider),
-      body: { /* transformed body */ },
+      body: {
+        /* transformed body */
+      },
     };
   }
 
@@ -220,6 +226,7 @@ Use clear, descriptive commit messages:
 - Reference issues and PRs when relevant
 
 Examples:
+
 ```
 Add OpenRouter transformer
 

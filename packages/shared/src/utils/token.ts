@@ -66,10 +66,7 @@ export function countRequestTokens(request: ClaudeCodeRequest): number {
 /**
  * Estimate if request exceeds a token threshold
  */
-export function exceedsTokenThreshold(
-  request: ClaudeCodeRequest,
-  threshold: number
-): boolean {
+export function exceedsTokenThreshold(request: ClaudeCodeRequest, threshold: number): boolean {
   const tokens = countRequestTokens(request);
   return tokens > threshold;
 }

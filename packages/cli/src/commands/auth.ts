@@ -6,8 +6,7 @@ import { TokenStore, GitHubCopilotAuth } from '@ucr/core';
 
 const tokenStore = new TokenStore();
 
-export const authCommand = new Command('auth')
-  .description('Manage authentication credentials');
+export const authCommand = new Command('auth').description('Manage authentication credentials');
 
 // auth login
 authCommand
@@ -67,7 +66,7 @@ authCommand
     // Select provider if not specified
     if (!provider) {
       const providers = await tokenStore.list();
-      
+
       if (providers.length === 0) {
         prompts.outro(chalk.yellow('No authenticated providers found'));
         return;
@@ -75,7 +74,7 @@ authCommand
 
       const result = await prompts.select({
         message: 'Select a provider to logout from:',
-        options: providers.map(p => ({ value: p, label: p })),
+        options: providers.map((p) => ({ value: p, label: p })),
       });
 
       if (prompts.isCancel(result)) {
@@ -147,7 +146,7 @@ authCommand
 
 async function loginGitHubCopilot(): Promise<void> {
   const auth = new GitHubCopilotAuth(tokenStore);
-  
+
   const spinner = prompts.spinner();
   spinner.start('Starting GitHub authentication...');
 

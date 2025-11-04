@@ -1,10 +1,5 @@
 import { BaseTransformer } from '../base.js';
-import type {
-  ClaudeCodeRequest,
-  ClaudeCodeResponse,
-  Provider,
-  HttpMethod,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
 
 /**
  * Perplexity transformer
@@ -15,7 +10,7 @@ export class PerplexityTransformer extends BaseTransformer {
 
   async transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -78,10 +73,7 @@ export class PerplexityTransformer extends BaseTransformer {
     };
   }
 
-  async transformResponse(
-    response: any,
-    original: ClaudeCodeRequest
-  ): Promise<ClaudeCodeResponse> {
+  async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     const choice = response.choices?.[0];
     if (!choice) {
       throw new Error('Invalid Perplexity response: no choices');

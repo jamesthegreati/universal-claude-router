@@ -4,8 +4,7 @@ import chalk from 'chalk';
 import { loadConfig } from '@ucr/core';
 import fs from 'fs/promises';
 
-export const providersCommand = new Command('providers')
-  .description('Manage providers');
+export const providersCommand = new Command('providers').description('Manage providers');
 
 // providers list
 providersCommand
@@ -213,7 +212,7 @@ async function discoverProviders(): Promise<any[]> {
 async function updateProviderStatus(
   id: string,
   enabled: boolean,
-  configPath: string
+  configPath: string,
 ): Promise<void> {
   const configContent = await fs.readFile(configPath, 'utf-8');
   const config = JSON.parse(configContent);

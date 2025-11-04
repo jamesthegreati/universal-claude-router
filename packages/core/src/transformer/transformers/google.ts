@@ -1,10 +1,5 @@
 import { BaseTransformer } from '../base.js';
-import type {
-  ClaudeCodeRequest,
-  ClaudeCodeResponse,
-  Provider,
-  HttpMethod,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
 
 /**
  * Google Gemini transformer (Vertex AI & AI Studio)
@@ -15,7 +10,7 @@ export class GoogleTransformer extends BaseTransformer {
 
   async transformRequest(
     request: ClaudeCodeRequest,
-    provider: Provider
+    provider: Provider,
   ): Promise<{
     url: string;
     method: HttpMethod;
@@ -24,8 +19,8 @@ export class GoogleTransformer extends BaseTransformer {
   }> {
     const modelName = this.getModelName(request, provider);
     // Check if provider is Vertex AI by validating the full URL pattern
-    const isVertexAI = provider.baseUrl.startsWith('https://') && 
-                       provider.baseUrl.endsWith('.googleapis.com');
+    const isVertexAI =
+      provider.baseUrl.startsWith('https://') && provider.baseUrl.endsWith('.googleapis.com');
 
     // Vertex AI uses generateContent endpoint
     const endpoint = isVertexAI
@@ -48,7 +43,7 @@ export class GoogleTransformer extends BaseTransformer {
 
     // Transform messages to Gemini format
     const contents: any[] = [];
-    
+
     for (const msg of request.messages) {
       contents.push({
         role: msg.role === 'assistant' ? 'model' : 'user',
@@ -81,18 +76,13 @@ export class GoogleTransformer extends BaseTransformer {
     };
   }
 
-  async transformResponse(
-    response: any,
-    original: ClaudeCodeRequest
-  ): Promise<ClaudeCodeResponse> {
+  async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     const candidate = response.candidates?.[0];
     if (!candidate) {
       throw new Error('Invalid Google response: no candidates');
     }
 
-    const text = candidate.content?.parts
-      ?.map((part: any) => part.text || '')
-      .join('') || '';
+    const text = candidate.content?.parts?.map((part: any) => part.text || '').join('') || '';
 
     return {
       id: this.generateId(),
@@ -120,9 +110,7 @@ export class GoogleTransformer extends BaseTransformer {
       const candidate = parsed.candidates?.[0];
       if (!candidate) return null;
 
-      const text = candidate.content?.parts
-        ?.map((part: any) => part.text || '')
-        .join('') || '';
+      const text = candidate.content?.parts?.map((part: any) => part.text || '').join('') || '';
 
       if (!text) return null;
 

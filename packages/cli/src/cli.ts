@@ -9,10 +9,7 @@ import { setupCommand } from './commands/setup.js';
 
 const program = new Command();
 
-program
-  .name('ucr')
-  .description('Universal Claude Router CLI')
-  .version('0.1.0');
+program.name('ucr').description('Universal Claude Router CLI').version('0.1.0');
 
 // Add commands
 program.addCommand(setupCommand);

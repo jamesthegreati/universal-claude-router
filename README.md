@@ -1,36 +1,45 @@
 # 🚀 Universal Claude Router
 
-A production-ready proxy server that enables Claude Code to work with **75+ LLM providers** through intelligent routing, API transformation, and comprehensive management tools.
+A production-ready proxy server that enables Claude Code to work with **75+ LLM providers** through
+intelligent routing, API transformation, and comprehensive management tools.
 
-Universal Claude Router (UCR) combines the best features from [claude-code-router](https://github.com/musistudio/claude-code-router) and [opencode](https://github.com/sst/opencode) into a unified, powerful solution.
+Universal Claude Router (UCR) combines the best features from
+[claude-code-router](https://github.com/musistudio/claude-code-router) and
+[opencode](https://github.com/sst/opencode) into a unified, powerful solution.
 
 ## ✨ Features
 
 ### 🔀 Smart Routing
-- **Task-based routing** - Automatically route requests based on task type (think, background, longContext, webSearch, image)
+
+- **Task-based routing** - Automatically route requests based on task type (think, background,
+  longContext, webSearch, image)
 - **Token-aware routing** - Switch models based on context length
 - **Custom routing** - Write JavaScript functions for advanced routing logic
 - **Priority-based fallback** - Automatic failover to backup providers
 
 ### 🌐 Multi-Provider Support
+
 - **75+ providers** via transformers
 - **Built-in transformers** for Anthropic, OpenAI, Ollama
 - **Extensible architecture** - Add custom transformers
 - **Provider discovery** - Auto-detect local providers (Ollama, LM Studio)
 
 ### 🔄 API Transformation
+
 - **Automatic format adaptation** - Convert between different API formats
 - **Streaming support** - SSE streaming for compatible providers
 - **Request/response logging** - Debug API interactions
 - **Error handling** - Unified error responses
 
 ### 📊 Monitoring & Analytics
+
 - **Cost tracking** - Track usage and costs per provider/model
 - **Usage analytics** - View request patterns and statistics
 - **Health checks** - Monitor provider availability
 - **Performance metrics** - Latency and throughput tracking
 
 ### ⚙️ Configuration
+
 - **Hot-reload** - Changes apply instantly without restart
 - **Environment variables** - Support for ${VAR} interpolation
 - **Validation** - Zod schema validation for all config
@@ -81,6 +90,7 @@ Create a `ucr.config.json` file:
 ```
 
 Set your API key:
+
 ```bash
 export ANTHROPIC_API_KEY="your-api-key-here"
 ```
@@ -248,7 +258,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## 🙏 Acknowledgments
 
 Built upon the excellent work of:
-- [claude-code-router](https://github.com/musistudio/claude-code-router) - Task-based routing inspiration
+
+- [claude-code-router](https://github.com/musistudio/claude-code-router) - Task-based routing
+  inspiration
 - [opencode](https://github.com/sst/opencode) - Provider support and OAuth patterns
 - [claude-code](https://github.com/anthropics/claude-code) - The amazing Claude Code tool
 
@@ -275,5 +287,7 @@ Built upon the excellent work of:
 
 ## 📞 Support
 
-- GitHub Issues: [Report bugs or request features](https://github.com/jamesthegreati/universal-claude-router/issues)
-- Discussions: [Ask questions or share ideas](https://github.com/jamesthegreati/universal-claude-router/discussions)
+- GitHub Issues:
+  [Report bugs or request features](https://github.com/jamesthegreati/universal-claude-router/issues)
+- Discussions:
+  [Ask questions or share ideas](https://github.com/jamesthegreati/universal-claude-router/discussions)

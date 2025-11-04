@@ -7,7 +7,7 @@ export class ValidationError extends Error {
   constructor(
     message: string,
     public field?: string,
-    public code?: string
+    public code?: string,
   ) {
     super(message);
     this.name = 'ValidationError';
@@ -34,35 +34,19 @@ export function validateProvider(provider: Provider): void {
   try {
     new URL(provider.baseUrl);
   } catch {
-    throw new ValidationError(
-      'Provider baseUrl must be a valid URL',
-      'baseUrl',
-      'INVALID_URL'
-    );
+    throw new ValidationError('Provider baseUrl must be a valid URL', 'baseUrl', 'INVALID_URL');
   }
 
   if (provider.priority !== undefined && provider.priority < 0) {
-    throw new ValidationError(
-      'Provider priority must be >= 0',
-      'priority',
-      'INVALID_VALUE'
-    );
+    throw new ValidationError('Provider priority must be >= 0', 'priority', 'INVALID_VALUE');
   }
 
   if (provider.timeout !== undefined && provider.timeout < 0) {
-    throw new ValidationError(
-      'Provider timeout must be >= 0',
-      'timeout',
-      'INVALID_VALUE'
-    );
+    throw new ValidationError('Provider timeout must be >= 0', 'timeout', 'INVALID_VALUE');
   }
 
   if (provider.maxRetries !== undefined && provider.maxRetries < 0) {
-    throw new ValidationError(
-      'Provider maxRetries must be >= 0',
-      'maxRetries',
-      'INVALID_VALUE'
-    );
+    throw new ValidationError('Provider maxRetries must be >= 0', 'maxRetries', 'INVALID_VALUE');
   }
 }
 
@@ -71,11 +55,7 @@ export function validateProvider(provider: Provider): void {
  */
 export function validateConfig(config: UCRConfig): void {
   if (!config.providers || config.providers.length === 0) {
-    throw new ValidationError(
-      'At least one provider is required',
-      'providers',
-      'REQUIRED'
-    );
+    throw new ValidationError('At least one provider is required', 'providers', 'REQUIRED');
   }
 
   // Validate each provider
@@ -87,7 +67,7 @@ export function validateConfig(config: UCRConfig): void {
         throw new ValidationError(
           `Provider '${provider.id}': ${error.message}`,
           `providers.${provider.id}.${error.field}`,
-          error.code
+          error.code,
         );
       }
       throw error;
@@ -101,7 +81,7 @@ export function validateConfig(config: UCRConfig): void {
       throw new ValidationError(
         `Duplicate provider ID: ${provider.id}`,
         'providers',
-        'DUPLICATE_ID'
+        'DUPLICATE_ID',
       );
     }
     providerIds.add(provider.id);
@@ -114,17 +94,13 @@ export function validateConfig(config: UCRConfig): void {
         throw new ValidationError(
           'Server port must be between 1 and 65535',
           'server.port',
-          'INVALID_VALUE'
+          'INVALID_VALUE',
         );
       }
     }
 
     if (config.server.timeout !== undefined && config.server.timeout < 0) {
-      throw new ValidationError(
-        'Server timeout must be >= 0',
-        'server.timeout',
-        'INVALID_VALUE'
-      );
+      throw new ValidationError('Server timeout must be >= 0', 'server.timeout', 'INVALID_VALUE');
     }
   }
 
@@ -135,7 +111,7 @@ export function validateConfig(config: UCRConfig): void {
       throw new ValidationError(
         'Router tokenThreshold must be >= 0',
         'router.tokenThreshold',
-        'INVALID_VALUE'
+        'INVALID_VALUE',
       );
     }
   }
@@ -161,7 +137,7 @@ export function validateClaudeCodeRequest(request: ClaudeCodeRequest): void {
       throw new ValidationError(
         `Message at index ${i} is missing role`,
         `messages[${i}].role`,
-        'REQUIRED'
+        'REQUIRED',
       );
     }
 
@@ -169,7 +145,7 @@ export function validateClaudeCodeRequest(request: ClaudeCodeRequest): void {
       throw new ValidationError(
         `Message at index ${i} has invalid role: ${message.role}`,
         `messages[${i}].role`,
-        'INVALID_VALUE'
+        'INVALID_VALUE',
       );
     }
 
@@ -177,18 +153,14 @@ export function validateClaudeCodeRequest(request: ClaudeCodeRequest): void {
       throw new ValidationError(
         `Message at index ${i} is missing content`,
         `messages[${i}].content`,
-        'REQUIRED'
+        'REQUIRED',
       );
     }
   }
 
   // Validate optional parameters
   if (request.max_tokens !== undefined && request.max_tokens < 1) {
-    throw new ValidationError(
-      'max_tokens must be >= 1',
-      'max_tokens',
-      'INVALID_VALUE'
-    );
+    throw new ValidationError('max_tokens must be >= 1', 'max_tokens', 'INVALID_VALUE');
   }
 
   if (request.temperature !== undefined) {
@@ -196,18 +168,14 @@ export function validateClaudeCodeRequest(request: ClaudeCodeRequest): void {
       throw new ValidationError(
         'temperature must be between 0 and 2',
         'temperature',
-        'INVALID_VALUE'
+        'INVALID_VALUE',
       );
     }
   }
 
   if (request.top_p !== undefined) {
     if (request.top_p < 0 || request.top_p > 1) {
-      throw new ValidationError(
-        'top_p must be between 0 and 1',
-        'top_p',
-        'INVALID_VALUE'
-      );
+      throw new ValidationError('top_p must be between 0 and 1', 'top_p', 'INVALID_VALUE');
     }
   }
 
@@ -233,11 +201,7 @@ export function isValidUrl(url: string): boolean {
  */
 export function isValidApiKey(apiKey: string): boolean {
   // Basic validation: non-empty, no whitespace, reasonable length
-  return (
-    apiKey.length > 0 &&
-    apiKey.length < 1000 &&
-    !/\s/.test(apiKey)
-  );
+  return apiKey.length > 0 && apiKey.length < 1000 && !/\s/.test(apiKey);
 }
 
 /**

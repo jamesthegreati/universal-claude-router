@@ -1,10 +1,4 @@
-import type {
-  ClaudeCodeRequest,
-  Provider,
-  UCRConfig,
-  RouteResult,
-  TaskType,
-} from '@ucr/shared';
+import type { ClaudeCodeRequest, Provider, UCRConfig, RouteResult, TaskType } from '@ucr/shared';
 import { countRequestTokens } from '@ucr/shared';
 import { detectTaskType } from './task-detector.js';
 import { RouterError } from '../utils/error.js';
@@ -87,19 +81,13 @@ export class Router {
   /**
    * Select provider based on task type
    */
-  private selectProviderForTask(
-    taskType: TaskType,
-    tokenCount: number
-  ): Provider | null {
+  private selectProviderForTask(taskType: TaskType, tokenCount: number): Provider | null {
     const router = this.config.router || {};
-    const enabledProviders = this.config.providers.filter(
-      (p) => p.enabled !== false
-    );
+    const enabledProviders = this.config.providers.filter((p) => p.enabled !== false);
 
     // Check if we need a long context model
     const needsLongContext =
-      taskType === 'longContext' ||
-      tokenCount > (router.tokenThreshold || 100000);
+      taskType === 'longContext' || tokenCount > (router.tokenThreshold || 100000);
 
     // Get provider ID for this task type
     let providerId: string | undefined;

@@ -28,11 +28,13 @@ node dist/cli.js --help
 Interactive setup wizard to create a new configuration file.
 
 **Usage:**
+
 ```bash
 ucr setup
 ```
 
 **Interactive Prompts:**
+
 - Server host (default: localhost)
 - Server port (default: 3000)
 - CORS enabled (default: yes)
@@ -41,10 +43,10 @@ ucr setup
 - Default provider
 - Task-based routing (optional)
 
-**Output:**
-Creates `ucr.config.json` with your configuration.
+**Output:** Creates `ucr.config.json` with your configuration.
 
 **Example Session:**
+
 ```
 🚀 Universal Claude Router Setup
 
@@ -80,20 +82,24 @@ Manage authentication credentials for providers.
 Authenticate with a provider.
 
 **Usage:**
+
 ```bash
 ucr auth login [provider]
 ```
 
 **Arguments:**
+
 - `provider` (optional): Provider ID (e.g., `anthropic`, `github-copilot`)
 
 **Behavior:**
+
 - If provider is specified, authenticates directly
 - If not specified, shows interactive provider selection
 - For OAuth providers (GitHub Copilot), starts device flow
 - For API key providers, prompts for key
 
 **Examples:**
+
 ```bash
 # Interactive selection
 ucr auth login
@@ -106,6 +112,7 @@ ucr auth login github-copilot
 ```
 
 **OAuth Flow:**
+
 ```
 ◇ UCR Authentication
 │
@@ -129,11 +136,13 @@ ucr auth login github-copilot
 Remove credentials for a provider.
 
 **Usage:**
+
 ```bash
 ucr auth logout [provider]
 ```
 
 **Examples:**
+
 ```bash
 # Interactive selection
 ucr auth logout
@@ -147,11 +156,13 @@ ucr auth logout github-copilot
 List all authenticated providers.
 
 **Usage:**
+
 ```bash
 ucr auth list
 ```
 
 **Output:**
+
 ```
 Authenticated Providers:
   ✓ anthropic (apiKey)
@@ -164,6 +175,7 @@ Authenticated Providers:
 Refresh OAuth tokens for a provider.
 
 **Usage:**
+
 ```bash
 ucr auth refresh [provider]
 ```
@@ -181,14 +193,17 @@ Manage provider configurations.
 List all configured providers.
 
 **Usage:**
+
 ```bash
 ucr providers list [options]
 ```
 
 **Options:**
+
 - `-c, --config <path>`: Config file path (default: `ucr.config.json`)
 
 **Output:**
+
 ```
 Configured Providers:
   ✓ anthropic - Anthropic Claude [priority: 10]
@@ -207,19 +222,23 @@ Configured Providers:
 Auto-discover local providers (Ollama, LM Studio, LocalAI).
 
 **Usage:**
+
 ```bash
 ucr providers discover [options]
 ```
 
 **Options:**
+
 - `-c, --config <path>`: Config file path (default: `ucr.config.json`)
 
 **Behavior:**
+
 - Scans common local ports (11434, 1234, 8080)
 - Detects Ollama, LM Studio, LocalAI
 - Prompts to add discovered providers to config
 
 **Output:**
+
 ```
 ◇ Provider Discovery
 │
@@ -241,17 +260,21 @@ Discovered providers:
 Enable a provider.
 
 **Usage:**
+
 ```bash
 ucr providers enable <id> [options]
 ```
 
 **Arguments:**
+
 - `id`: Provider ID
 
 **Options:**
+
 - `-c, --config <path>`: Config file path
 
 **Example:**
+
 ```bash
 ucr providers enable ollama
 ✓ Enabled provider: ollama
@@ -262,11 +285,13 @@ ucr providers enable ollama
 Disable a provider.
 
 **Usage:**
+
 ```bash
 ucr providers disable <id> [options]
 ```
 
 **Example:**
+
 ```bash
 ucr providers disable openai
 ✓ Disabled provider: openai
@@ -277,11 +302,13 @@ ucr providers disable openai
 Test provider connection and health.
 
 **Usage:**
+
 ```bash
 ucr providers test <id> [options]
 ```
 
 **Output:**
+
 ```
 ◇ Testing provider: anthropic
 │
@@ -304,17 +331,21 @@ Manage model configurations.
 List available models.
 
 **Usage:**
+
 ```bash
 ucr models list [provider] [options]
 ```
 
 **Arguments:**
+
 - `provider` (optional): Filter by provider ID
 
 **Options:**
+
 - `-c, --config <path>`: Config file path
 
 **Examples:**
+
 ```bash
 # List all models
 ucr models list
@@ -324,6 +355,7 @@ ucr models list anthropic
 ```
 
 **Output:**
+
 ```
 Anthropic (anthropic):
   Default: claude-3-5-sonnet-20241022
@@ -345,14 +377,17 @@ OpenAI (openai):
 Set default model for a provider.
 
 **Usage:**
+
 ```bash
 ucr models set <provider/model> [options]
 ```
 
 **Arguments:**
+
 - `provider/model`: Provider ID and model ID separated by `/`
 
 **Example:**
+
 ```bash
 ucr models set anthropic/claude-3-opus-20240229
 ✓ Set default model for anthropic: claude-3-opus-20240229
@@ -363,16 +398,19 @@ ucr models set anthropic/claude-3-opus-20240229
 Show detailed model information.
 
 **Usage:**
+
 ```bash
 ucr models info <provider/model> [options]
 ```
 
 **Example:**
+
 ```bash
 ucr models info anthropic/claude-3-5-sonnet-20241022
 ```
 
 **Output:**
+
 ```
 Model: anthropic/claude-3-5-sonnet-20241022
 Provider: Anthropic Claude
@@ -402,29 +440,33 @@ Manage configuration files.
 Initialize a new configuration file with wizard.
 
 **Usage:**
+
 ```bash
 ucr config init [options]
 ```
 
 **Options:**
+
 - `-o, --output <path>`: Output path (default: `ucr.config.json`)
 
-**Behavior:**
-Similar to `ucr setup` but with more control over output location.
+**Behavior:** Similar to `ucr setup` but with more control over output location.
 
 #### `ucr config validate [path]`
 
 Validate configuration file.
 
 **Usage:**
+
 ```bash
 ucr config validate [path]
 ```
 
 **Arguments:**
+
 - `path` (optional): Config file path (default: `ucr.config.json`)
 
 **Output Success:**
+
 ```
 ✓ Configuration is valid
 
@@ -435,6 +477,7 @@ Configuration Summary:
 ```
 
 **Output Error:**
+
 ```
 ✗ Configuration is invalid: Expected string, got number at providers[0].apiKey
 ```
@@ -444,23 +487,25 @@ Configuration Summary:
 Display current configuration.
 
 **Usage:**
+
 ```bash
 ucr config show [path]
 ```
 
-**Output:**
-Displays the raw JSON configuration file.
+**Output:** Displays the raw JSON configuration file.
 
 #### `ucr config edit [path]`
 
 Open configuration in editor.
 
 **Usage:**
+
 ```bash
 ucr config edit [path]
 ```
 
 **Behavior:**
+
 - Opens config file in `$EDITOR` (default: vi)
 - Waits for editor to close
 - Use for manual config editing
@@ -667,6 +712,7 @@ Credentials are stored in `~/.ucr/credentials.json`:
 ```
 
 **Security:**
+
 - File permissions: 0600 (user-only)
 - Location: User home directory
 - Never committed to git

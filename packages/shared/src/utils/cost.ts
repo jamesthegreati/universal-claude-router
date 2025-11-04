@@ -6,7 +6,7 @@ import type { UsageRecord, ModelMetadata } from '../types';
 export function calculateCost(
   inputTokens: number,
   outputTokens: number,
-  model: ModelMetadata
+  model: ModelMetadata,
 ): {
   inputCost: number;
   outputCost: number;
@@ -34,21 +34,30 @@ export function aggregateUsage(records: UsageRecord[]): {
   totalOutputTokens: number;
   totalCost: number;
   averageLatency: number;
-  byProvider: Record<string, {
-    requests: number;
-    tokens: number;
-    cost: number;
-  }>;
-  byModel: Record<string, {
-    requests: number;
-    tokens: number;
-    cost: number;
-  }>;
-  byTaskType: Record<string, {
-    requests: number;
-    tokens: number;
-    cost: number;
-  }>;
+  byProvider: Record<
+    string,
+    {
+      requests: number;
+      tokens: number;
+      cost: number;
+    }
+  >;
+  byModel: Record<
+    string,
+    {
+      requests: number;
+      tokens: number;
+      cost: number;
+    }
+  >;
+  byTaskType: Record<
+    string,
+    {
+      requests: number;
+      tokens: number;
+      cost: number;
+    }
+  >;
 } {
   const result = {
     totalRequests: records.length,

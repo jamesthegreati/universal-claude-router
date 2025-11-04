@@ -34,7 +34,7 @@ export class OAuthManager {
     provider: string,
     clientId: string,
     deviceCodeUrl: string,
-    scope?: string
+    scope?: string,
   ): Promise<OAuthDeviceCodeResponse> {
     const body = new URLSearchParams({
       client_id: clientId,
@@ -66,7 +66,7 @@ export class OAuthManager {
     clientId: string,
     tokenUrl: string,
     interval: number = 5,
-    expiresIn: number = 900
+    expiresIn: number = 900,
   ): Promise<OAuthTokenResponse> {
     const startTime = Date.now();
     const maxTime = expiresIn * 1000;
@@ -89,7 +89,7 @@ export class OAuthManager {
         body: body.toString(),
       });
 
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
 
       if (response.ok && data.access_token) {
         return data as OAuthTokenResponse;
@@ -97,10 +97,7 @@ export class OAuthManager {
 
       // Check for errors
       if (data.error) {
-        if (
-          data.error === 'authorization_pending' ||
-          data.error === 'slow_down'
-        ) {
+        if (data.error === 'authorization_pending' || data.error === 'slow_down') {
           // Continue polling
           if (data.error === 'slow_down') {
             interval += 5; // Increase interval
@@ -118,10 +115,7 @@ export class OAuthManager {
   /**
    * Save OAuth credentials
    */
-  async saveCredentials(
-    provider: string,
-    tokenResponse: OAuthTokenResponse
-  ): Promise<void> {
+  async saveCredentials(provider: string, tokenResponse: OAuthTokenResponse): Promise<void> {
     const credential: AuthCredential = {
       provider,
       type: AuthType.OAUTH,
@@ -166,7 +160,7 @@ export class OAuthManager {
     provider: string,
     refreshToken: string,
     clientId: string,
-    tokenUrl: string
+    tokenUrl: string,
   ): Promise<OAuthTokenResponse> {
     const body = new URLSearchParams({
       client_id: clientId,
