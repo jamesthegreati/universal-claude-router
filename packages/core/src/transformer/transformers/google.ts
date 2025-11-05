@@ -1,17 +1,17 @@
-import { BaseTransformer } from '../base.js';
+import { BaseTransformer } from "../base.js";
 import type {
   ClaudeCodeRequest,
   ClaudeCodeResponse,
   Provider,
   HttpMethod,
-} from '@ucr/shared';
+} from "@ucr/shared";
 
 /**
  * Google Gemini transformer (Vertex AI & AI Studio)
  * Supports both Vertex AI and AI Studio endpoints
  */
 export class GoogleTransformer extends BaseTransformer {
-  readonly provider = 'google';
+  readonly provider = "google";
 
   async transformRequest(
     request: ClaudeCodeRequest,
@@ -24,24 +24,24 @@ export class GoogleTransformer extends BaseTransformer {
   }> {
     const modelName = this.getModelName(request, provider);
     const isVertexAI =
-      provider.baseUrl.startsWith('https://') &&
-      provider.baseUrl.endsWith('.googleapis.com');
+      provider.baseUrl.startsWith("https://") &&
+      provider.baseUrl.endsWith(".googleapis.com");
 
     const endpoint = isVertexAI
       ? `${provider.baseUrl}/v1/projects/${
-          provider.metadata?.projectId || 'default'
+          provider.metadata?.projectId || "default"
         }/locations/${
-          provider.metadata?.location || 'us-central1'
+          provider.metadata?.location || "us-central1"
         }/publishers/google/models/${modelName}:generateContent`
       : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent?key=${provider.apiKey}`;
 
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...provider.headers,
     };
 
     if (isVertexAI && provider.apiKey) {
-      headers['Authorization'] = `Bearer ${provider.apiKey}`;
+      headers["Authorization"] = `Bearer ${provider.apiKey}`;
     }
 
     const contents = this.mergeConsecutiveMessages(request.messages);
@@ -64,24 +64,24 @@ export class GoogleTransformer extends BaseTransformer {
 
     return {
       url: endpoint,
-      method: 'POST' as HttpMethod,
+      method: "POST" as HttpMethod,
       headers,
       body,
     };
   }
 
   private mergeConsecutiveMessages(
-    messages: ClaudeCodeRequest['messages'],
+    messages: ClaudeCodeRequest["messages"],
   ): any[] {
     if (!messages.length) {
       return [];
     }
 
     const merged: any[] = [];
-    let lastRole: 'user' | 'model' | null = null;
+    let lastRole: "user" | "model" | null = null;
 
     for (const msg of messages) {
-      const currentRole = msg.role === 'assistant' ? 'model' : 'user';
+      const currentRole = msg.role === "assistant" ? "model" : "user";
       const textContent = this.extractTextContent(msg.content);
 
       if (currentRole === lastRole && merged.length > 0) {
@@ -106,21 +106,21 @@ export class GoogleTransformer extends BaseTransformer {
   ): Promise<ClaudeCodeResponse> {
     const candidate = response.candidates?.[0];
     if (!candidate) {
-      throw new Error('Invalid Google response: no candidates');
+      throw new Error("Invalid Google response: no candidates");
     }
 
     const text =
       candidate.content?.parts
-        ?.map((part: any) => part.text || '')
-        .join('') || '';
+        ?.map((part: any) => part.text || "")
+        .join("") || "";
 
     return {
       id: this.generateId(),
-      type: 'message',
-      role: 'assistant',
+      type: "message",
+      role: "assistant",
       content: [
         {
-          type: 'text',
+          type: "text",
           text,
         },
       ],
@@ -136,7 +136,7 @@ export class GoogleTransformer extends BaseTransformer {
 
   transformStreamChunk(chunk: string): string | null {
     try {
-      if (chunk.startsWith('data: ')) {
+      if (chunk.startsWith("data: ")) {
         chunk = chunk.substring(6);
       }
       const parsed = JSON.parse(chunk);
@@ -145,15 +145,15 @@ export class GoogleTransformer extends BaseTransformer {
 
       const text =
         candidate.content?.parts
-          ?.map((part: any) => part.text || '')
-          .join('') || '';
+          ?.map((part: any) => part.text || "")
+          .join("") || "";
 
       if (!text) return null;
 
       return `data: ${JSON.stringify({
-        type: 'content_block_delta',
+        type: "content_block_delta",
         delta: {
-          type: 'text_delta',
+          type: "text_delta",
           text,
         },
       })}\n\n`;
@@ -164,15 +164,15 @@ export class GoogleTransformer extends BaseTransformer {
 
   private mapFinishReason(reason: string | undefined): string {
     switch (reason) {
-      case 'STOP':
-        return 'end_turn';
-      case 'MAX_TOKENS':
-        return 'max_tokens';
-      case 'SAFETY':
-      case 'RECITATION':
-        return 'stop_sequence'; // Or a more specific custom reason
+      case "STOP":
+        return "end_turn";
+      case "MAX_TOKENS":
+        return "max_tokens";
+      case "SAFETY":
+      case "RECITATION":
+        return "stop_sequence"; // Or a more specific custom reason
       default:
-        return 'unknown';
+        return "unknown";
     }
   }
 }
