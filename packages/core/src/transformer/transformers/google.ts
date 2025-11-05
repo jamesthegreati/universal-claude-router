@@ -14,7 +14,7 @@ export class GoogleTransformer extends BaseTransformer {
   readonly provider = 'google';
 
   async transformRequest(
-    request: ClaudeCodeCodeRequest,
+    request: ClaudeCodeRequest,
     provider: Provider,
   ): Promise<{
     url: string;
@@ -110,8 +110,9 @@ export class GoogleTransformer extends BaseTransformer {
     }
 
     const text =
-      candidate.content?.parts?.map((part: any) => part.text || '').join('') ||
-      '';
+      candidate.content?.parts
+        ?.map((part: any) => part.text || '')
+        .join('') || '';
 
     return {
       id: this.generateId(),
