@@ -1,5 +1,10 @@
 import { BaseTransformer } from '../base.js';
-import type { ClaudeCodeRequest, ClaudeCodeResponse, Provider, HttpMethod } from '@ucr/shared';
+import type {
+  ClaudeCodeRequest,
+  ClaudeCodeResponse,
+  Provider,
+  HttpMethod,
+} from '@ucr/shared';
 
 /**
  * Google Gemini transformer (Vertex AI & AI Studio)
@@ -19,10 +24,15 @@ export class GoogleTransformer extends BaseTransformer {
   }> {
     const modelName = this.getModelName(request, provider);
     const isVertexAI =
-      provider.baseUrl.startsWith('https://') && provider.baseUrl.endsWith('.googleapis.com');
+      provider.baseUrl.startsWith('https://') &&
+      provider.baseUrl.endsWith('.googleapis.com');
 
     const endpoint = isVertexAI
-      ? `${provider.baseUrl}/v1/projects/${provider.metadata?.projectId || 'default'}/locations/${provider.metadata?.location || 'us-central1'}/publishers/google/models/${modelName}:generateContent`
+      ? `${provider.baseUrl}/v1/projects/${
+          provider.metadata?.projectId || 'default'
+        }/locations/${
+          provider.metadata?.location || 'us-central1'
+        }/publishers/google/models/${modelName}:generateContent`
       : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent?key=${provider.apiKey}`;
 
     const headers: Record<string, string> = {
@@ -59,8 +69,10 @@ export class GoogleTransformer extends BaseTransformer {
       body,
     };
   }
-  
-  private mergeConsecutiveMessages(messages: ClaudeCodeRequest['messages']): any[] {
+
+  private mergeConsecutiveMessages(
+    messages: ClaudeCodeRequest['messages'],
+  ): any[] {
     if (!messages.length) {
       return [];
     }
@@ -88,14 +100,18 @@ export class GoogleTransformer extends BaseTransformer {
     return merged;
   }
 
-
-  async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
+  async transformResponse(
+    response: any,
+    original: ClaudeCodeRequest,
+  ): Promise<ClaudeCodeResponse> {
     const candidate = response.candidates?.[0];
     if (!candidate) {
       throw new Error('Invalid Google response: no candidates');
     }
 
-    const text = candidate.content?.parts?.map((part: any) => part.text || '').join('') || '';
+    const text =
+      candidate.content?.parts?.map((part: any) => part.text || '').join('') ||
+      '';
 
     return {
       id: this.generateId(),
@@ -126,7 +142,10 @@ export class GoogleTransformer extends BaseTransformer {
       const candidate = parsed.candidates?.[0];
       if (!candidate) return null;
 
-      const text = candidate.content?.parts?.map((part: any) => part.text || '').join('') || '';
+      const text =
+        candidate.content?.parts
+          ?.map((part: any) => part.text || '')
+          .join('') || '';
 
       if (!text) return null;
 
