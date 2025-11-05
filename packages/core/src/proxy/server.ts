@@ -1,138 +1,87 @@
-import Fastify from 'fastify';
+import Fastify, { type FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
-import compress from '@fastify/compress';
 import type { UCRConfig } from '@ucr/shared';
-import { getLogger, initLogger } from '../utils/logger.js';
-import { UCRError } from '../utils/error.js';
 import { setupRoutes } from './routes.js';
+import { getLogger } from '../utils/logger.js';
+import { errorHandler } from '../utils/error.js';
 
-/**
- * Create and configure Fastify server
- */
-export async function createServer(config: UCRConfig) {
-  const serverConfig = config.server || {};
-  const loggingConfig = config.logging || {};
+export async function createProxyServer(config: UCRConfig): Promise<FastifyInstance> {
+  const logger = getLogger();
 
-  // Initialize external logger for UCR-specific logging
-  initLogger(loggingConfig);
-
-  // Configure Fastify logger
-  const fastifyLoggerConfig: any = loggingConfig.pretty
-    ? {
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-            translateTime: 'SYS:standard',
-            ignore: 'pid,hostname',
-          },
-        },
-        level: loggingConfig.level || 'info',
-      }
-    : {
-        level: loggingConfig.level || 'info',
-      };
-
-  // Create Fastify instance with performance optimizations
   const app = Fastify({
-    logger: fastifyLoggerConfig,
+    logger: false, // We use our custom logger
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'requestId',
-    // Performance optimizations
-    disableRequestLogging: loggingConfig.level === 'error' || loggingConfig.level === 'warn',
-    trustProxy: true,
-    keepAliveTimeout: 72000, // 72 seconds
-    connectionTimeout: 30000, // 30 seconds
-    bodyLimit: 1048576, // 1MB
-    // Router options (fastify v5+)
-    routerOptions: {
-      caseSensitive: false,
-      ignoreTrailingSlash: true,
-    },
   });
 
-  // Register CORS
-  await app.register(cors, {
-    origin: serverConfig.cors?.origin || '*',
-    credentials: serverConfig.cors?.credentials ?? true,
-  });
-
-  // Register compression for better network performance
-  await app.register(compress, {
-    global: true,
-    threshold: 1024, // Only compress responses > 1KB
-    encodings: ['gzip', 'deflate'],
-  });
-
-  // Register rate limiting
-  if (serverConfig.rateLimit) {
-    await app.register(rateLimit, {
-      max: serverConfig.rateLimit.max || 100,
-      timeWindow: serverConfig.rateLimit.timeWindow || '1 minute',
+  // Add hook to log all requests
+  app.addHook('onRequest', async (request, reply) => {
+    logger.debug({
+      type: 'http_request',
+      method: request.method,
+      url: request.url,
+      headers: request.headers,
     });
+  });
+
+  // CORS configuration
+  if (config.server?.cors) {
+    await app.register(cors, config.server.cors);
   }
 
-  // Global error handler
-  app.setErrorHandler((error, request, reply) => {
-    if (error instanceof UCRError) {
-      return reply.status(error.statusCode).send(error.toJSON());
+  // Rate limiting
+  if (config.server?.rateLimit) {
+    await app.register(rateLimit, config.server.rateLimit);
+  }
+
+  // Add hook to accept any API key (bypass validation)
+  // UCR handles the real provider API keys
+  app.addHook('preHandler', async (request, reply) => {
+    // For /v1/messages endpoint, accept any authorization header
+    if (request.url.startsWith('/v1/messages')) {
+      const authHeader = request.headers.authorization || request.headers['x-api-key'];
+      
+      // If no auth header, add a dummy one
+      if (!authHeader) {
+        request.headers.authorization = 'Bearer sk-ant-ucr-dummy-key';
+      }
+      
+      logger.debug({
+        type: 'auth_bypass',
+        message: 'Accepting request - UCR will handle provider authentication',
+      });
     }
-
-    getLogger().error({
-      type: 'server_error',
-      error: {
-        message: error.message,
-        stack: error.stack,
-      },
-      request: {
-        method: request.method,
-        url: request.url,
-      },
-    });
-
-    return reply.status(500).send({
-      error: {
-        message: 'Internal server error',
-        code: 'INTERNAL_ERROR',
-      },
-    });
   });
 
-  // Health check endpoint
-  app.get('/health', async () => {
-    return { status: 'ok', version: '0.1.0', timestamp: Date.now() };
-  });
+  // Setup routes
+  await setupRoutes(app, config);
 
-  // Setup main routes
-  await setupRoutes(app as any, config);
+  // Global error handler
+  app.setErrorHandler(errorHandler);
 
   return app;
 }
 
-/**
- * Start the server
- */
-export async function startServer(config: UCRConfig) {
-  const serverConfig = config.server || {};
-  const host = serverConfig.host || 'localhost';
-  const port = serverConfig.port || 3000;
+export async function startProxyServer(config: UCRConfig): Promise<FastifyInstance> {
+  const app = await createProxyServer(config);
+  const logger = getLogger();
 
-  const app = await createServer(config);
+  const host = config.server?.host || '127.0.0.1';
+  const port = config.server?.port || 3000;
 
   try {
     await app.listen({ host, port });
-    getLogger().info({
+    logger.info({
       type: 'server_started',
       host,
       port,
-      message: `UCR server listening on http://${host}:${port}`,
+      url: `http://${host}:${port}`,
     });
-
     return app;
   } catch (error) {
-    getLogger().error({
-      type: 'server_start_error',
+    logger.error({
+      type: 'server_start_failed',
       error: error instanceof Error ? error.message : String(error),
     });
     throw error;
