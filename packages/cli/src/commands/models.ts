@@ -19,10 +19,13 @@ interface ModelsApiResponse {
 
 // Provider API endpoints for fetching models
 const PROVIDER_MODEL_APIS: Record<string, { endpoint: string; authHeader: string }> = {
-  'anthropic': { endpoint: 'https://api.anthropic.com/v1/models', authHeader: 'x-api-key' },
-  'openai': { endpoint: 'https://api.openai.com/v1/models', authHeader: 'authorization' },
-  'github-copilot': { endpoint: 'https://api.githubcopilot.com/models', authHeader: 'authorization' },
-  'openrouter': { endpoint: 'https://openrouter.ai/api/v1/models', authHeader: 'authorization' },
+  anthropic: { endpoint: 'https://api.anthropic.com/v1/models', authHeader: 'x-api-key' },
+  openai: { endpoint: 'https://api.openai.com/v1/models', authHeader: 'authorization' },
+  'github-copilot': {
+    endpoint: 'https://api.githubcopilot.com/models',
+    authHeader: 'authorization',
+  },
+  openrouter: { endpoint: 'https://openrouter.ai/api/v1/models', authHeader: 'authorization' },
 };
 
 async function fetchProviderModels(provider: any): Promise<string[]> {
@@ -43,13 +46,13 @@ async function fetchProviderModels(provider: any): Promise<string[]> {
     }
 
     const response = await fetch(apiConfig.endpoint, { headers });
-    
+
     if (!response.ok) {
       return [];
     }
 
-    const data = await response.json() as ModelsApiResponse;
-    
+    const data = (await response.json()) as ModelsApiResponse;
+
     // Parse response based on provider
     if (provider.id === 'openai' || provider.id === 'openrouter') {
       return data.data?.map((m: ModelData) => m.id) || [];
@@ -144,12 +147,12 @@ modelsCommand
         }
 
         const [providerId, modelId] = (selected as string).split('/');
-        
+
         // Update config
         const configContent = await fs.readFile(options.config, 'utf-8');
         const configData = JSON.parse(configContent);
         const providerConfig = configData.providers.find((p: any) => p.id === providerId);
-        
+
         if (providerConfig) {
           providerConfig.defaultModel = modelId;
           await fs.writeFile(options.config, JSON.stringify(configData, null, 2));
