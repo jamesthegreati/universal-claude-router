@@ -2,15 +2,66 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { loadConfig } from '@ucr/core';
 import fs from 'fs/promises';
+import * as prompts from '@clack/prompts';
+
+// Provider API endpoints for fetching models
+const PROVIDER_MODEL_APIS: Record<string, { endpoint: string; authHeader: string }> = {
+  'anthropic': { endpoint: 'https://api.anthropic.com/v1/models', authHeader: 'x-api-key' },
+  'openai': { endpoint: 'https://api.openai.com/v1/models', authHeader: 'authorization' },
+  'github-copilot': { endpoint: 'https://api.githubcopilot.com/models', authHeader: 'authorization' },
+  'openrouter': { endpoint: 'https://openrouter.ai/api/v1/models', authHeader: 'authorization' },
+};
+
+async function fetchProviderModels(provider: any): Promise<string[]> {
+  const apiConfig = PROVIDER_MODEL_APIS[provider.id];
+  if (!apiConfig) {
+    return [];
+  }
+
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (provider.apiKey && apiConfig.authHeader === 'x-api-key') {
+      headers['x-api-key'] = provider.apiKey;
+    } else if (provider.apiKey && apiConfig.authHeader === 'authorization') {
+      headers['authorization'] = `Bearer ${provider.apiKey}`;
+    }
+
+    const response = await fetch(apiConfig.endpoint, { headers });
+    
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    
+    // Parse response based on provider
+    if (provider.id === 'openai' || provider.id === 'openrouter') {
+      return data.data?.map((m: any) => m.id) || [];
+    } else if (provider.id === 'anthropic') {
+      return data.models?.map((m: any) => m.id) || [];
+    } else if (provider.id === 'github-copilot') {
+      return data.models?.map((m: any) => m.id) || [];
+    }
+
+    return [];
+  } catch (error) {
+    return [];
+  }
+}
 
 export const modelsCommand = new Command('models').description('Manage models');
 
-// models list
+// models list with interactive selection
 modelsCommand
   .command('list')
   .argument('[provider]', 'Filter by provider')
-  .description('List available models')
+  .description('List available models (fetches from provider APIs)')
   .option('-c, --config <path>', 'Config file path', 'ucr.config.json')
+  .option('--fetch', 'Fetch models from provider APIs', false)
+  .option('--select', 'Select and set a model interactively', false)
   .action(async (provider?: string, options?: any) => {
     try {
       const config = await loadConfig(options.config);
@@ -24,6 +75,8 @@ modelsCommand
         return;
       }
 
+      const allModels: Array<{ provider: string; model: string; name: string }> = [];
+
       for (const prov of providers) {
         console.log(chalk.bold(`\n${prov.name} (${prov.id}):`));
 
@@ -31,18 +84,63 @@ modelsCommand
           console.log(`  Default: ${chalk.green(prov.defaultModel)}`);
         }
 
-        if (prov.models && prov.models.length > 0) {
-          console.log(`  Available models:`);
-          for (const model of prov.models) {
-            console.log(`    - ${model}`);
-          }
+        let models: string[] = [];
+
+        // Fetch models from API if requested
+        if (options.fetch) {
+          const spinner = prompts.spinner();
+          spinner.start(`Fetching models from ${prov.name}...`);
+          const fetchedModels = await fetchProviderModels(prov);
+          spinner.stop(`Found ${fetchedModels.length} models`);
+          models = fetchedModels;
+        } else if (prov.models && prov.models.length > 0) {
+          models = prov.models;
         } else if (prov.metadata?.models) {
-          console.log(`  Available models:`);
-          for (const model of prov.metadata.models) {
-            console.log(`    - ${model.id} ${chalk.dim(`(${model.contextWindow} tokens)`)}`);
+          models = prov.metadata.models.map((m: any) => m.id);
+        }
+
+        if (models.length > 0) {
+          console.log(`  Available models (${models.length}):`);
+          for (const model of models) {
+            console.log(`    - ${model}`);
+            allModels.push({
+              provider: prov.id,
+              model: model,
+              name: `${prov.name} - ${model}`,
+            });
           }
         } else {
           console.log(chalk.dim('  No models configured'));
+        }
+      }
+
+      // Interactive selection
+      if (options.select && allModels.length > 0) {
+        console.log(''); // Empty line
+        const selected = await prompts.select({
+          message: 'Select a model to set as default:',
+          options: allModels.map((m) => ({
+            value: `${m.provider}/${m.model}`,
+            label: m.name,
+          })),
+        });
+
+        if (prompts.isCancel(selected)) {
+          console.log(chalk.yellow('Selection cancelled'));
+          return;
+        }
+
+        const [providerId, modelId] = (selected as string).split('/');
+        
+        // Update config
+        const configContent = await fs.readFile(options.config, 'utf-8');
+        const configData = JSON.parse(configContent);
+        const providerConfig = configData.providers.find((p: any) => p.id === providerId);
+        
+        if (providerConfig) {
+          providerConfig.defaultModel = modelId;
+          await fs.writeFile(options.config, JSON.stringify(configData, null, 2));
+          console.log(chalk.green(`✓ Set default model for ${providerId}: ${modelId}`));
         }
       }
     } catch (error) {
