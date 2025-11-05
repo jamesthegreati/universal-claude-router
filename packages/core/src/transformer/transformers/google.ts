@@ -18,11 +18,9 @@ export class GoogleTransformer extends BaseTransformer {
     body: unknown;
   }> {
     const modelName = this.getModelName(request, provider);
-    // Check if provider is Vertex AI by validating the full URL pattern
     const isVertexAI =
       provider.baseUrl.startsWith('https://') && provider.baseUrl.endsWith('.googleapis.com');
 
-    // Vertex AI uses generateContent endpoint
     const endpoint = isVertexAI
       ? `${provider.baseUrl}/v1/projects/${provider.metadata?.projectId || 'default'}/locations/${provider.metadata?.location || 'us-central1'}/publishers/google/models/${modelName}:generateContent`
       : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent?key=${provider.apiKey}`;
@@ -32,23 +30,11 @@ export class GoogleTransformer extends BaseTransformer {
       ...provider.headers,
     };
 
-    if (provider.apiKey) {
-      if (isVertexAI) {
-        headers['Authorization'] = `Bearer ${provider.apiKey}`;
-      } else {
-        // AI Studio API key is now in the query param
-      }
+    if (isVertexAI && provider.apiKey) {
+      headers['Authorization'] = `Bearer ${provider.apiKey}`;
     }
 
-    // Transform messages to Gemini format
-    const contents: any[] = [];
-
-    for (const msg of request.messages) {
-      contents.push({
-        role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: this.extractTextContent(msg.content) }],
-      });
-    }
+    const contents = this.mergeConsecutiveMessages(request.messages);
 
     const body: any = {
       contents,
@@ -60,7 +46,6 @@ export class GoogleTransformer extends BaseTransformer {
       },
     };
 
-    // Add system instruction if present
     if (request.system) {
       body.systemInstruction = {
         parts: [{ text: request.system }],
@@ -74,6 +59,35 @@ export class GoogleTransformer extends BaseTransformer {
       body,
     };
   }
+  
+  private mergeConsecutiveMessages(messages: ClaudeCodeRequest['messages']): any[] {
+    if (!messages.length) {
+      return [];
+    }
+
+    const merged: any[] = [];
+    let lastRole: 'user' | 'model' | null = null;
+
+    for (const msg of messages) {
+      const currentRole = msg.role === 'assistant' ? 'model' : 'user';
+      const textContent = this.extractTextContent(msg.content);
+
+      if (currentRole === lastRole && merged.length > 0) {
+        // Merge with the previous message of the same role
+        const lastMessage = merged[merged.length - 1];
+        lastMessage.parts[0].text += `\n${textContent}`;
+      } else {
+        // Add a new message
+        merged.push({
+          role: currentRole,
+          parts: [{ text: textContent }],
+        });
+        lastRole = currentRole;
+      }
+    }
+    return merged;
+  }
+
 
   async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     const candidate = response.candidates?.[0];
