@@ -4,6 +4,19 @@ import { loadConfig } from '@ucr/core';
 import fs from 'fs/promises';
 import * as prompts from '@clack/prompts';
 
+// Type definitions for API responses
+interface ModelData {
+  id: string;
+  name?: string;
+  [key: string]: any;
+}
+
+interface ModelsApiResponse {
+  data?: ModelData[];
+  models?: ModelData[];
+  [key: string]: any;
+}
+
 // Provider API endpoints for fetching models
 const PROVIDER_MODEL_APIS: Record<string, { endpoint: string; authHeader: string }> = {
   'anthropic': { endpoint: 'https://api.anthropic.com/v1/models', authHeader: 'x-api-key' },
@@ -35,15 +48,15 @@ async function fetchProviderModels(provider: any): Promise<string[]> {
       return [];
     }
 
-    const data = await response.json();
+    const data = await response.json() as ModelsApiResponse;
     
     // Parse response based on provider
     if (provider.id === 'openai' || provider.id === 'openrouter') {
-      return data.data?.map((m: any) => m.id) || [];
+      return data.data?.map((m: ModelData) => m.id) || [];
     } else if (provider.id === 'anthropic') {
-      return data.models?.map((m: any) => m.id) || [];
+      return data.models?.map((m: ModelData) => m.id) || [];
     } else if (provider.id === 'github-copilot') {
-      return data.models?.map((m: any) => m.id) || [];
+      return data.models?.map((m: ModelData) => m.id) || [];
     }
 
     return [];
