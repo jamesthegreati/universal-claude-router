@@ -81,75 +81,51 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       // Handle streaming
       if (claudeRequest.stream && transformer.supportsStreaming()) {
         const stream = await makeStreamingRequest({
-          method: transformedRequest.method,
           url: transformedRequest.url,
+          method: transformedRequest.method,
           headers: transformedRequest.headers,
           body: transformedRequest.body,
-          timeout: provider.timeout,
+          provider,
+          transformer,
         });
-
-        reply.raw.writeHead(200, {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          Connection: 'keep-alive',
-        });
-
-        const reader = stream.getReader();
-        const decoder = new TextDecoder();
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            const chunk = decoder.decode(value, { stream: true });
-            const transformed = transformer.transformStreamChunk?.(chunk);
-            if (transformed) {
-              reply.raw.write(transformed);
-            }
-          }
-        } finally {
-          reply.raw.end();
-        }
 
         const duration = Date.now() - startTime;
         metrics.recordRequest(duration, false, true, false);
+
         logger.info({
-          type: 'request_completed',
+          type: 'streaming_started',
           requestId,
           provider: provider.id,
-          streaming: true,
           duration,
         });
 
-        return reply;
+        reply.header('Content-Type', 'text/event-stream');
+        reply.header('Cache-Control', 'no-cache');
+        reply.header('Connection', 'keep-alive');
+
+        return reply.send(stream);
       }
 
-      // Handle non-streaming
+      // Non-streaming request
       const response = await makeHttpRequest({
-        method: transformedRequest.method,
         url: transformedRequest.url,
+        method: transformedRequest.method,
         headers: transformedRequest.headers,
         body: transformedRequest.body,
-        timeout: provider.timeout,
+        provider,
       });
 
-      if (response.statusCode >= 400) {
-        throw new ProviderError(
-          `Provider returned error: ${JSON.stringify(response.body)}`,
-          provider.id,
-          response.statusCode,
-        );
-      }
-
       // Transform response
-      const claudeResponse = await transformer.transformResponse(response.body, claudeRequest);
+      const claudeResponse = await transformer.transformResponse(response, claudeRequest);
 
       // Cache the response
-      await responseCache.set(claudeRequest, claudeResponse);
+      if (!claudeRequest.stream) {
+        await responseCache.set(claudeRequest, claudeResponse);
+      }
 
       const duration = Date.now() - startTime;
       metrics.recordRequest(duration, false, false, false);
+
       logger.info({
         type: 'request_completed',
         requestId,
@@ -191,45 +167,47 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
       providers: config.providers.map((p) => ({
         id: p.id,
         name: p.name,
-        enabled: p.enabled !== false,
-        models: p.models || [],
+        enabled: p.enabled,
+        priority: p.priority,
+        defaultModel: p.defaultModel,
       })),
     };
   });
 
   /**
-   * Get configuration
+   * Health check endpoint
    */
-  app.get('/v1/config', async () => {
+  app.get('/health', async () => {
     return {
+      status: 'ok',
       version: config.version,
-      providers: config.providers.length,
-      router: config.router,
-      features: config.features,
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
     };
   });
 
   /**
-   * Performance metrics and diagnostics endpoint
+   * Metrics endpoint
    */
-  app.get('/debug/metrics', async () => {
-    const memUsage = process.memoryUsage();
+  app.get('/metrics', async () => {
+    return metrics.getStats();
+  });
 
+  /**
+   * Cache stats endpoint
+   */
+  app.get('/cache/stats', async () => {
     return {
-      performance: metrics.getStats(),
-      memory: {
-        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024) + ' MB',
-        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024) + ' MB',
-        external: Math.round(memUsage.external / 1024 / 1024) + ' MB',
-        rss: Math.round(memUsage.rss / 1024 / 1024) + ' MB',
-      },
-      cache: {
-        manager: cacheManager.getStats(),
-        response: responseCache.getStats(),
-        metadata: metadataCache.getStats(),
-      },
-      uptime: process.uptime(),
-      timestamp: Date.now(),
+      response: await responseCache.getStats(),
+      metadata: await metadataCache.getStats(),
     };
+  });
+
+  /**
+   * Clear caches
+   */
+  app.delete('/cache', async () => {
+    await cacheManager.clearAll();
+    return { success: true, message: 'All caches cleared' };
   });
 }
