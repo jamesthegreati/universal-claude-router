@@ -25,7 +25,7 @@ export class GoogleTransformer extends BaseTransformer {
     // Vertex AI uses generateContent endpoint
     const endpoint = isVertexAI
       ? `${provider.baseUrl}/v1/projects/${provider.metadata?.projectId || 'default'}/locations/${provider.metadata?.location || 'us-central1'}/publishers/google/models/${modelName}:generateContent`
-      : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent`;
+      : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent?key=${provider.apiKey}`;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -36,8 +36,7 @@ export class GoogleTransformer extends BaseTransformer {
       if (isVertexAI) {
         headers['Authorization'] = `Bearer ${provider.apiKey}`;
       } else {
-        // AI Studio uses query param
-        headers['x-goog-api-key'] = provider.apiKey;
+        // AI Studio API key is now in the query param
       }
     }
 
@@ -106,6 +105,9 @@ export class GoogleTransformer extends BaseTransformer {
 
   transformStreamChunk(chunk: string): string | null {
     try {
+      if (chunk.startsWith('data: ')) {
+        chunk = chunk.substring(6);
+      }
       const parsed = JSON.parse(chunk);
       const candidate = parsed.candidates?.[0];
       if (!candidate) return null;
@@ -134,9 +136,9 @@ export class GoogleTransformer extends BaseTransformer {
         return 'max_tokens';
       case 'SAFETY':
       case 'RECITATION':
-        return 'stop_sequence';
+        return 'stop_sequence'; // Or a more specific custom reason
       default:
-        return 'end_turn';
+        return 'unknown';
     }
   }
 }
