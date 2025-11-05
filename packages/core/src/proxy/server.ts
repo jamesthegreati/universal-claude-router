@@ -41,12 +41,12 @@ export async function createProxyServer(config: UCRConfig): Promise<FastifyInsta
     // For /v1/messages endpoint, accept any authorization header
     if (request.url.startsWith('/v1/messages')) {
       const authHeader = request.headers.authorization || request.headers['x-api-key'];
-      
+
       // If no auth header, add a dummy one
       if (!authHeader) {
         request.headers.authorization = 'Bearer sk-ant-ucr-dummy-key';
       }
-      
+
       logger.debug({
         type: 'auth_bypass',
         message: 'Accepting request - UCR will handle provider authentication',
