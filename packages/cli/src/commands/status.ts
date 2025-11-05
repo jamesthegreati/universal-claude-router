@@ -1,95 +1,95 @@
 import { Command } from 'commander';
-import * as prompts from '@clack/prompts';
 import chalk from 'chalk';
+import { resolve } from 'path';
 import fs from 'fs/promises';
 import { loadConfig } from '@ucr/core';
+import { isServerRunning, getServerUrl } from '../utils/process.js';
 
-export const modelCommand = new Command('model')
-  .description('Interactive model selector')
-  .option('-c, --config <path>', 'Config file path', 'ucr.config.json')
+export const statusCommand = new Command('status')
+  .description('Show UCR server status and configuration')
+  .option('-c, --config <path>', 'Path to config file', 'ucr.config.json')
   .action(async (options) => {
+    const configPath = resolve(process.cwd(), options.config);
+
+    // Check if config exists
+    let config;
     try {
-      prompts.intro(chalk.bold.cyan('🎯 UCR Model Selector'));
-
-      const config = await loadConfig(options.config);
-
-      // Get all available models from providers
-      const modelOptions: Array<{ value: string; label: string; hint?: string }> = [];
-
-      for (const provider of config.providers) {
-        if (provider.enabled === false) continue;
-
-        // Get models from provider
-        let models: string[] = [];
-        if (provider.models && provider.models.length > 0) {
-          models = provider.models;
-        } else if (provider.metadata?.models) {
-          models = provider.metadata.models.map((m: any) => m.id);
-        } else if (provider.defaultModel) {
-          models = [provider.defaultModel];
-        }
-
-        for (const model of models) {
-          const isDefault = provider.defaultModel === model;
-          modelOptions.push({
-            value: `${provider.id}/${model}`,
-            label: `${provider.name} - ${model}${isDefault ? ' (current default)' : ''}`,
-            hint: provider.id,
-          });
-        }
-      }
-
-      if (modelOptions.length === 0) {
-        prompts.outro(chalk.yellow('No models found in configuration'));
-        return;
-      }
-
-      // Get current default
-      const currentDefault = config.router?.default || config.providers[0]?.id;
-      const currentDefaultProvider = config.providers.find((p: any) => p.id === currentDefault);
-      const currentModel = currentDefaultProvider?.defaultModel || 'not set';
-
-      console.log(
-        chalk.dim(`\nCurrent default model: ${currentDefault} - ${currentModel}\n`) || '',
-      );
-
-      // Select model
-      const selected = await prompts.select({
-        message: 'Select default model:',
-        options: modelOptions,
-      });
-
-      if (prompts.isCancel(selected)) {
-        prompts.cancel('Selection cancelled');
-        process.exit(0);
-      }
-
-      const [providerId, modelId] = (selected as string).split('/');
-
-      // Update config
-      const configPath = options.config;
-      const configContent = await fs.readFile(configPath, 'utf-8');
-      const configData = JSON.parse(configContent);
-
-      // Update provider default model
-      const provider = configData.providers.find((p: any) => p.id === providerId);
-      if (provider) {
-        provider.defaultModel = modelId;
-      }
-
-      // Update router default
-      if (!configData.router) {
-        configData.router = {};
-      }
-      configData.router.default = providerId;
-
-      await fs.writeFile(configPath, JSON.stringify(configData, null, 2));
-
-      prompts.outro(
-        chalk.green(`✓ default model set to: ${providerId} - ${modelId}`) || '',
-      );
-    } catch (error) {
-      console.error(chalk.red(`Error: ${error}`));
+      await fs.access(configPath);
+      config = await loadConfig(configPath);
+    } catch {
+      console.log(chalk.red('❌ Configuration file not found'));
+      console.log(chalk.dim(`Looking for: ${configPath}`));
+      console.log(chalk.dim('\nRun `ucr setup` to create a configuration file.'));
       process.exit(1);
     }
+
+    console.log(chalk.bold.cyan('\n📊 UCR Status\n'));
+
+    // Server status
+    const running = await isServerRunning(config);
+    const serverUrl = getServerUrl(config);
+
+    console.log(chalk.bold('Server:'));
+    if (running) {
+      console.log(chalk.green('  ✓ Running'));
+      console.log(chalk.dim(`  URL: ${serverUrl}`));
+    } else {
+      console.log(chalk.yellow('  ⚠ Not running'));
+      console.log(chalk.dim(`  Would run on: ${serverUrl}`));
+    }
+
+    // Configuration
+    console.log(chalk.bold('\nConfiguration:'));
+    console.log(chalk.dim(`  File: ${configPath}`));
+    console.log(
+      `  Providers: ${config.providers.filter((p: any) => p.enabled !== false).length}/${config.providers.length} enabled`,
+    );
+
+    // List enabled providers
+    console.log(chalk.bold('\nEnabled Providers:'));
+    for (const provider of config.providers) {
+      if (provider.enabled === false) continue;
+
+      const isDefault = config.router?.default === provider.id;
+      const marker = isDefault ? chalk.green('*') : ' ';
+      console.log(
+        `  ${marker} ${provider.name} (${provider.id}) - ${provider.defaultModel || 'no default model'}`,
+      );
+    }
+
+    // Router configuration
+    if (config.router) {
+      console.log(chalk.bold('\nRouter Configuration:'));
+      console.log(`  Default: ${config.router.default || 'not set'}`);
+      if (config.router.think) console.log(`  Think: ${config.router.think}`);
+      if (config.router.background) console.log(`  Background: ${config.router.background}`);
+      if (config.router.longContext) console.log(`  Long Context: ${config.router.longContext}`);
+      if (config.router.webSearch) console.log(`  Web Search: ${config.router.webSearch}`);
+      if (config.router.image) console.log(`  Image: ${config.router.image}`);
+    }
+
+    // Features
+    if (config.features) {
+      console.log(chalk.bold('\nFeatures:'));
+      console.log(
+        `  Cost Tracking: ${config.features.costTracking ? chalk.green('✓') : chalk.red('✗')}`,
+      );
+      console.log(
+        `  Analytics: ${config.features.analytics ? chalk.green('✓') : chalk.red('✗')}`,
+      );
+      console.log(
+        `  Health Checks: ${config.features.healthChecks ? chalk.green('✓') : chalk.red('✗')}`,
+      );
+    }
+
+    // Next steps
+    console.log(chalk.bold('\nCommands:'));
+    if (!running) {
+      console.log(chalk.dim('  ucr start  - Start the server'));
+    } else {
+      console.log(chalk.dim('  ucr code   - Launch Claude Code with UCR'));
+      console.log(chalk.dim('  ucr stop   - Stop the server'));
+    }
+    console.log(chalk.dim('  ucr model  - Select default model'));
+    console.log('');
   });
