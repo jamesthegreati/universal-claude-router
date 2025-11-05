@@ -116,10 +116,13 @@ export const codeCommand = new Command('code')
     console.log(chalk.dim(`Server URL: ${serverUrl}\n`));
 
     // Prepare environment variables for Claude
+    // CRITICAL: Set a dummy API key that Claude Code will accept
     const env = {
       ...process.env,
       ANTHROPIC_API_URL: serverUrl,
       ANTHROPIC_BASE_URL: serverUrl,
+      // Use a dummy key with the correct format (sk-ant-...)
+      ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || 'sk-ant-ucr-dummy-key-for-routing-purposes-only',
     };
 
     // Find Claude command
@@ -140,6 +143,7 @@ export const codeCommand = new Command('code')
     const claudeArgs = command.args || [];
 
     console.log(chalk.dim(`Launching: ${claudeCommand} ${claudeArgs.join(' ')}\n`));
+    console.log(chalk.blue('ℹ️  UCR is proxying requests - your configured providers will be used'));
 
     // Execute claude command with UCR environment
     const claudeProcess = spawn(claudeCommand, claudeArgs, {
