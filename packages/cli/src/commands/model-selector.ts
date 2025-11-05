@@ -85,9 +85,7 @@ export const modelCommand = new Command('model')
 
       await fs.writeFile(configPath, JSON.stringify(configData, null, 2));
 
-      prompts.outro(
-        chalk.green(`✓ default model set to: ${providerId} - ${modelId}`) || '',
-      );
+      prompts.outro(chalk.green(`✓ default model set to: ${providerId} - ${modelId}`) || '');
     } catch (error) {
       console.error(chalk.red(`Error: ${error}`));
       process.exit(1);

@@ -74,9 +74,7 @@ export const statusCommand = new Command('status')
       console.log(
         `  Cost Tracking: ${config.features.costTracking ? chalk.green('✓') : chalk.red('✗')}`,
       );
-      console.log(
-        `  Analytics: ${config.features.analytics ? chalk.green('✓') : chalk.red('✗')}`,
-      );
+      console.log(`  Analytics: ${config.features.analytics ? chalk.green('✓') : chalk.red('✗')}`);
       console.log(
         `  Health Checks: ${config.features.healthChecks ? chalk.green('✓') : chalk.red('✗')}`,
       );

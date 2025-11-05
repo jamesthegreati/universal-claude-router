@@ -34,8 +34,7 @@ function findClaudeCommand(): string | null {
   // Try npm global bin path
   try {
     const npmBin = execSync('npm bin -g', { encoding: 'utf-8' }).trim();
-    const claudePath =
-      process.platform === 'win32' ? `${npmBin}\\claude.cmd` : `${npmBin}/claude`;
+    const claudePath = process.platform === 'win32' ? `${npmBin}\\claude.cmd` : `${npmBin}/claude`;
 
     try {
       execSync(`"${claudePath}" --version`, { stdio: 'ignore' });
@@ -144,7 +143,9 @@ export const codeCommand = new Command('code')
     const claudeArgs = command.args || [];
 
     console.log(chalk.dim(`Launching: ${claudeCommand} ${claudeArgs.join(' ')}\n`));
-    console.log(chalk.blue('ℹ️  UCR is proxying requests - your configured providers will be used'));
+    console.log(
+      chalk.blue('ℹ️  UCR is proxying requests - your configured providers will be used'),
+    );
 
     // Execute claude command with UCR environment
     const claudeProcess = spawn(claudeCommand, claudeArgs, {
