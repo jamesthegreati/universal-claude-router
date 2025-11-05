@@ -1,9 +1,51 @@
 #!/bin/bash
 
-# Universal Claude Router - Project Setup Script
-# This script initializes the monorepo structure
+# Universal Claude Router - Enhanced Project Setup Script
+# This script initializes the monorepo structure with improved error handling
+
+set -e  # Exit on error
 
 echo "🚀 Setting up Universal Claude Router..."
+
+# Function to kill all UCR processes
+kill_ucr_processes() {
+    echo "🛑 Stopping all UCR processes..."
+    pkill -f "ucr-server" 2>/dev/null || true
+    pkill -f "ucr" 2>/dev/null || true
+    pkill -f "node.*ucr" 2>/dev/null || true
+    sleep 2
+    echo "✓ All UCR processes stopped"
+}
+
+# Function to force clean installation
+force_clean() {
+    echo "🧹 Force cleaning installation..."
+    kill_ucr_processes
+    
+    # Remove node_modules
+    rm -rf node_modules
+    rm -rf packages/*/node_modules
+    
+    # Remove build artifacts
+    rm -rf dist
+    rm -rf packages/*/dist
+    rm -rf .turbo
+    
+    # Remove lock files
+    rm -f package-lock.json
+    rm -f packages/*/package-lock.json
+    
+    echo "✓ Clean complete"
+}
+
+# Check if force clean is requested
+if [ "$1" = "--force" ] || [ "$1" = "-f" ]; then
+    echo "⚠️  Force mode enabled"
+    force_clean
+fi
+
+# Trap errors and offer to force clean
+trap 'echo ""; echo "❌ Setup failed!"; echo ""; echo "Try running with --force flag to clean and retry:"; echo "  ./setup.sh --force"; exit 1' ERR
 
 # Create directory structure
 mkdir -p packages/{shared,core,cli,ui}/{src,test}
@@ -19,7 +61,7 @@ mkdir -p docs/providers
 mkdir -p .github/workflows
 mkdir -p scripts
 
-echo "✅ Directory structure created"
+echo "✓ Directory structure created"
 
 # Create root package.json
 cat > package.json << 'EOF'
@@ -38,7 +80,8 @@ cat > package.json << 'EOF'
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "setup:force": "./setup.sh --force"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
@@ -229,77 +272,3 @@ A powerful tool that enables Claude Code to work with **any LLM provider** by co
 This project is currently under active development.
 
 ## 📦 Project Structure
-
-```
-universal-claude-router/
-├── packages/
-│   ├── shared/     # Shared types and utilities
-│   ├── core/       # Core proxy and routing logic
-│   ├── cli/        # CLI tool
-│   └── ui/         # Web UI
-├── config/         # Configuration templates
-└── docs/           # Documentation
-```
-
-## 🛠️ Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build all packages
-npm run build
-
-# Run in development mode
-npm run dev
-
-# Run tests
-npm test
-```
-
-## 📄 License
-
-MIT License
-
-## 🙏 Acknowledgments
-
-Built upon the excellent work of:
-- [claude-code-router](https://github.com/musistudio/claude-code-router)
-- [opencode](https://github.com/sst/opencode)
-- [claude-code](https://github.com/anthropics/claude-code)
-EOF
-
-# Create LICENSE
-cat > LICENSE << 'EOF'
-MIT License
-
-Copyright (c) 2025 Universal Claude Router Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-EOF
-
-echo "✅ Project structure initialized!"
-echo ""
-echo "Next steps:"
-echo "1. cd universal-claude-router"
-echo "2. git add ."
-echo "3. git commit -m 'Initial project structure'"
-echo "4. git push origin main"
-echo ""
-echo "Then the GitHub Coding Agent can build the full implementation!"
