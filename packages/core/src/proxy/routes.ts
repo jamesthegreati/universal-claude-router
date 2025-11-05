@@ -85,8 +85,6 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
           method: transformedRequest.method,
           headers: transformedRequest.headers,
           body: transformedRequest.body,
-          provider,
-          transformer,
         });
 
         const duration = Date.now() - startTime;
@@ -112,7 +110,6 @@ export async function setupRoutes(app: FastifyInstance, config: UCRConfig) {
         method: transformedRequest.method,
         headers: transformedRequest.headers,
         body: transformedRequest.body,
-        provider,
       });
 
       // Transform response

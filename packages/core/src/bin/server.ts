@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { resolve } from 'path';
-import { startServer } from '../proxy/server.js';
+import { startProxyServer } from '../proxy/server.js';
 import { getConfigManager } from '../config/config.js';
 import { getLogger, initLogger } from '../utils/logger.js';
 
@@ -31,7 +31,7 @@ async function main() {
     logger.info({ type: 'hot_reload_enabled' });
 
     // Start server
-    const app = await startServer(config);
+    const app = await startProxyServer(config);
 
     // Handle graceful shutdown
     const shutdown = async () => {

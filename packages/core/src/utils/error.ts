@@ -164,3 +164,12 @@ export function isRetryableError(error: unknown): boolean {
 
   return false;
 }
+
+/**
+ * Fastify error handler
+ */
+export function errorHandler(error: any, request: any, reply: any) {
+  const ucrError = normalizeError(error);
+
+  reply.status(ucrError.statusCode).send(ucrError.toJSON());
+}
