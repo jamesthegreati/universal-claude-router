@@ -5,16 +5,17 @@ import { resolve } from 'path';
 import { spawn, execSync } from 'child_process';
 import fs from 'fs/promises';
 import { loadConfig } from '@ucr/core';
-import { isServerRunning, waitForServer, startServerInBackground, getServerUrl } from '../utils/process.js';
+import {
+  isServerRunning,
+  waitForServer,
+  startServerInBackground,
+  getServerUrl,
+} from '../utils/process.js';
 import { syncAuthToConfig } from '../utils/config-sync.js';
 
 // Helper function to find Claude command across different environments
 function findClaudeCommand(): string | null {
-  const possibleCommands = [
-    'claude',
-    'claude.cmd',
-    'claude.exe',
-  ];
+  const possibleCommands = ['claude', 'claude.cmd', 'claude.exe'];
 
   for (const cmd of possibleCommands) {
     try {
@@ -33,10 +34,9 @@ function findClaudeCommand(): string | null {
   // Try npm global bin path
   try {
     const npmBin = execSync('npm bin -g', { encoding: 'utf-8' }).trim();
-    const claudePath = process.platform === 'win32' 
-      ? `${npmBin}\\claude.cmd`
-      : `${npmBin}/claude`;
-    
+    const claudePath =
+      process.platform === 'win32' ? `${npmBin}\\claude.cmd` : `${npmBin}/claude`;
+
     try {
       execSync(`"${claudePath}" --version`, { stdio: 'ignore' });
       return claudePath;
@@ -122,12 +122,13 @@ export const codeCommand = new Command('code')
       ANTHROPIC_API_URL: serverUrl,
       ANTHROPIC_BASE_URL: serverUrl,
       // Use a dummy key with the correct format (sk-ant-...)
-      ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || 'sk-ant-ucr-dummy-key-for-routing-purposes-only',
+      ANTHROPIC_API_KEY:
+        process.env.ANTHROPIC_API_KEY || 'sk-ant-ucr-dummy-key-for-routing-purposes-only',
     };
 
     // Find Claude command
     const claudeCommand = findClaudeCommand();
-    
+
     if (!claudeCommand) {
       console.error(chalk.red('❌ Claude command not found'));
       console.log(chalk.dim('\nMake sure Claude Code is installed and available in your PATH.'));
