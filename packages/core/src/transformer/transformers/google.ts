@@ -14,7 +14,7 @@ export class GoogleTransformer extends BaseTransformer {
   readonly provider = 'google';
 
   async transformRequest(
-    request: ClaudeCodeRequest,
+    request: ClaudeCodeCodeRequest,
     provider: Provider,
   ): Promise<{
     url: string;
