@@ -2,11 +2,53 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
 import { resolve } from 'path';
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import fs from 'fs/promises';
 import { loadConfig } from '@ucr/core';
 import { isServerRunning, waitForServer, startServerInBackground, getServerUrl } from '../utils/process.js';
 import { syncAuthToConfig } from '../utils/config-sync.js';
+
+// Helper function to find Claude command across different environments
+function findClaudeCommand(): string | null {
+  const possibleCommands = [
+    'claude',
+    'claude.cmd',
+    'claude.exe',
+  ];
+
+  for (const cmd of possibleCommands) {
+    try {
+      // Try to find the command
+      if (process.platform === 'win32') {
+        execSync(`where ${cmd}`, { stdio: 'ignore' });
+      } else {
+        execSync(`which ${cmd}`, { stdio: 'ignore' });
+      }
+      return cmd;
+    } catch {
+      // Command not found, try next
+    }
+  }
+
+  // Try npm global bin path
+  try {
+    const npmBin = execSync('npm bin -g', { encoding: 'utf-8' }).trim();
+    const claudePath = process.platform === 'win32' 
+      ? `${npmBin}\\claude.cmd`
+      : `${npmBin}/claude`;
+    
+    try {
+      execSync(`"${claudePath}" --version`, { stdio: 'ignore' });
+      return claudePath;
+    } catch {
+      // Not found in npm global bin
+    }
+  } catch {
+    // npm command failed
+  }
+
+  return null;
+}
 
 export const codeCommand = new Command('code')
   .description('Launch Claude Code with UCR (auto-starts server)')
@@ -80,11 +122,21 @@ export const codeCommand = new Command('code')
       ANTHROPIC_BASE_URL: serverUrl,
     };
 
-    // Check if claude command exists
-    const claudeCommand = 'claude';
+    // Find Claude command
+    const claudeCommand = findClaudeCommand();
+    
+    if (!claudeCommand) {
+      console.error(chalk.red('❌ Claude command not found'));
+      console.log(chalk.dim('\nMake sure Claude Code is installed and available in your PATH.'));
+      console.log(chalk.dim('Install it with: npm install -g @anthropic-ai/claude-code'));
+      console.log(chalk.dim('\nIf already installed, try:'));
+      console.log(chalk.dim('  1. Restart your terminal'));
+      console.log(chalk.dim('  2. Run: npm list -g @anthropic-ai/claude-code'));
+      console.log(chalk.dim('  3. Add npm global bin to PATH: npm bin -g'));
+      process.exit(1);
+    }
 
     // Get all arguments passed to the code command (excluding UCR-specific options)
-    // Commander.js stores unknown arguments in command.args
     const claudeArgs = command.args || [];
 
     console.log(chalk.dim(`Launching: ${claudeCommand} ${claudeArgs.join(' ')}\n`));
@@ -93,15 +145,14 @@ export const codeCommand = new Command('code')
     const claudeProcess = spawn(claudeCommand, claudeArgs, {
       stdio: 'inherit',
       env,
+      shell: true, // Use shell to handle .cmd files on Windows
     });
 
     claudeProcess.on('error', (error: NodeJS.ErrnoException) => {
+      console.error(chalk.red(`❌ Failed to launch Claude: ${error.message}`));
       if (error.code === 'ENOENT') {
-        console.error(chalk.red('❌ Claude command not found'));
-        console.log(chalk.dim('\nMake sure Claude Code is installed and available in your PATH.'));
-        console.log(chalk.dim('Install it with: npm install -g @anthropic-ai/claude-code'));
-      } else {
-        console.error(chalk.red(`❌ Failed to launch Claude: ${error.message}`));
+        console.log(chalk.dim('\nClaude command became unavailable.'));
+        console.log(chalk.dim('Try reinstalling: npm install -g @anthropic-ai/claude-code'));
       }
       process.exit(1);
     });
