@@ -82,6 +82,11 @@ export class MultiLayerCache {
     }
   }
 
+  async clearAll(): Promise<void> {
+    this.l1Cache.clear();
+    this.l2Cache.clear();
+  }
+
   getStats(): CacheStats {
     return {
       ...this.stats,
