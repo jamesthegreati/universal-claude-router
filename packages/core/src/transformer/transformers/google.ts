@@ -18,9 +18,30 @@ export class GoogleTransformer extends BaseTransformer {
     body: unknown;
   }> {
     const modelName = this.getModelName(request, provider);
-    const isVertexAI =
-      provider.baseUrl.includes('aiplatform.googleapis.com') ||
-      provider.baseUrl.includes('vertexai.googleapis.com');
+    // Check if this is Vertex AI by validating the hostname
+    let isVertexAI = false;
+    try {
+      const url = new URL(provider.baseUrl);
+      const hostname = url.hostname;
+      // Match Vertex AI hostnames: either exact match or contains the domain as part of a compound subdomain
+      // Examples: aiplatform.googleapis.com, us-central1-aiplatform.googleapis.com
+      const parts = hostname.split('.');
+      if (parts.length >= 3) {
+        // Check if it ends with googleapis.com
+        if (parts[parts.length - 2] === 'googleapis' && parts[parts.length - 1] === 'com') {
+          // Check if any part contains 'aiplatform' or 'vertexai'
+          isVertexAI = parts.some(part => 
+            part === 'aiplatform' || 
+            part.endsWith('-aiplatform') || 
+            part === 'vertexai' || 
+            part.endsWith('-vertexai')
+          );
+        }
+      }
+    } catch {
+      // Invalid URL, default to false
+      isVertexAI = false;
+    }
 
     const endpoint = isVertexAI
       ? `${provider.baseUrl}/v1/projects/${provider.metadata?.projectId || 'default'}/locations/${
