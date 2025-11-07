@@ -24,7 +24,7 @@ describe('makeHttpRequest', () => {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
       body: {
-        json: vi.fn().mockResolvedValue({ data: 'test' }),
+        text: vi.fn().mockResolvedValue('{"data":"test"}'),
       },
     };
 
@@ -45,7 +45,6 @@ describe('makeHttpRequest', () => {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
       body: {
-        json: vi.fn().mockRejectedValue(new Error('Unexpected end of JSON input')),
         text: vi.fn().mockResolvedValue('Invalid JSON response text'),
       },
     };
@@ -75,7 +74,6 @@ describe('makeHttpRequest', () => {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
       body: {
-        json: vi.fn().mockRejectedValue(new Error('Unexpected end of JSON input')),
         text: vi.fn().mockResolvedValue(longText),
       },
     };
@@ -128,7 +126,7 @@ describe('makeStreamingRequest', () => {
       statusCode: 400,
       headers: { 'content-type': 'application/json' },
       body: {
-        json: vi.fn().mockResolvedValue({ error: 'Bad request' }),
+        text: vi.fn().mockResolvedValue('{"error":"Bad request"}'),
       },
     };
 
@@ -156,7 +154,6 @@ describe('makeStreamingRequest', () => {
       statusCode: 500,
       headers: { 'content-type': 'application/json' },
       body: {
-        json: vi.fn().mockRejectedValue(new Error('Invalid JSON')),
         text: vi.fn().mockResolvedValue('Internal server error'),
       },
     };
@@ -180,7 +177,6 @@ describe('makeStreamingRequest', () => {
       statusCode: 503,
       headers: { 'content-type': 'text/plain' },
       body: {
-        json: vi.fn().mockRejectedValue(new Error('Not JSON')),
         text: vi.fn().mockResolvedValue('Service unavailable'),
       },
     };

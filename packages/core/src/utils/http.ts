@@ -59,13 +59,15 @@ export async function makeHttpRequest<T = unknown>(
       clearTimeout(timeoutId);
     }
 
+    // Read the response body as text first to avoid stream consumption issues
+    const responseText = await response.body.text();
+    
     let responseBody: T;
     try {
-      responseBody = (await response.body.json()) as T;
+      responseBody = JSON.parse(responseText) as T;
     } catch (jsonError) {
-      const text = await response.body.text();
       throw new ProviderError(
-        `Provider returned invalid JSON: ${text.substring(0, 200)}`,
+        `Provider returned invalid JSON: ${responseText.substring(0, 200)}`,
         new URL(url).hostname,
         response.statusCode,
       );
@@ -121,12 +123,13 @@ export async function makeStreamingRequest(options: HttpRequestOptions): Promise
     }
 
     if (response.statusCode >= 400) {
+      // Read the response body as text first to avoid stream consumption issues
+      const errorText = await response.body.text();
       let errorBody: any;
       try {
-        errorBody = await response.body.json();
+        errorBody = JSON.parse(errorText);
       } catch {
-        const text = await response.body.text();
-        errorBody = { message: text };
+        errorBody = { message: errorText };
       }
       throw new ProviderError(
         `Provider returned error: ${JSON.stringify(errorBody)}`,
