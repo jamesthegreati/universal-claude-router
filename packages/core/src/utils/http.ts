@@ -59,12 +59,24 @@ export async function makeHttpRequest<T = unknown>(
       clearTimeout(timeoutId);
     }
 
-    const responseBody = await response.body.json();
+    // Read the response body as text first to avoid stream consumption issues
+    const responseText = await response.body.text();
+    
+    let responseBody: T;
+    try {
+      responseBody = JSON.parse(responseText) as T;
+    } catch (jsonError) {
+      throw new ProviderError(
+        `Provider returned invalid JSON: ${responseText.substring(0, 200)}`,
+        new URL(url).hostname,
+        response.statusCode,
+      );
+    }
 
     return {
       statusCode: response.statusCode,
       headers: response.headers as Record<string, string | string[]>,
-      body: responseBody as T,
+      body: responseBody,
     };
   } catch (error) {
     if (timeoutId) {
@@ -111,7 +123,14 @@ export async function makeStreamingRequest(options: HttpRequestOptions): Promise
     }
 
     if (response.statusCode >= 400) {
-      const errorBody = await response.body.json();
+      // Read the response body as text first to avoid stream consumption issues
+      const errorText = await response.body.text();
+      let errorBody: any;
+      try {
+        errorBody = JSON.parse(errorText);
+      } catch {
+        errorBody = { message: errorText };
+      }
       throw new ProviderError(
         `Provider returned error: ${JSON.stringify(errorBody)}`,
         new URL(url).hostname,
