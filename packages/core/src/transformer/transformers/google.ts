@@ -19,13 +19,14 @@ export class GoogleTransformer extends BaseTransformer {
   }> {
     const modelName = this.getModelName(request, provider);
     const isVertexAI =
-      provider.baseUrl.startsWith('https://') && provider.baseUrl.endsWith('.googleapis.com');
+      provider.baseUrl.includes('aiplatform.googleapis.com') ||
+      provider.baseUrl.includes('vertexai.googleapis.com');
 
     const endpoint = isVertexAI
       ? `${provider.baseUrl}/v1/projects/${provider.metadata?.projectId || 'default'}/locations/${
           provider.metadata?.location || 'us-central1'
         }/publishers/google/models/${modelName}:generateContent`
-      : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent?key=${provider.apiKey}`;
+      : `${provider.baseUrl}/v1beta/models/${modelName}:generateContent`;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -34,6 +35,8 @@ export class GoogleTransformer extends BaseTransformer {
 
     if (isVertexAI && provider.apiKey) {
       headers['Authorization'] = `Bearer ${provider.apiKey}`;
+    } else if (provider.apiKey) {
+      headers['x-goog-api-key'] = provider.apiKey;
     }
 
     const contents = this.mergeConsecutiveMessages(request.messages);
