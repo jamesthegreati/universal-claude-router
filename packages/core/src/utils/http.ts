@@ -61,10 +61,15 @@ export async function makeHttpRequest<T = unknown>(
 
     // Read the response body as text first to avoid stream consumption issues
     const responseText = await response.body.text();
-    
+
     let responseBody: T;
     try {
-      responseBody = JSON.parse(responseText) as T;
+      if (!responseText || responseText.trim() === '') {
+        // Some providers may return empty body (e.g., 204); coerce to empty object
+        responseBody = {} as T;
+      } else {
+        responseBody = JSON.parse(responseText) as T;
+      }
     } catch (jsonError) {
       throw new ProviderError(
         `Provider returned invalid JSON: ${responseText.substring(0, 200)}`,

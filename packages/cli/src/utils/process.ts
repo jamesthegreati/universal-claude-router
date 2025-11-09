@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const PID_DIR = join(os.homedir(), '.ucr');
-const PID_FILE = join(PID_DIR, 'ucr-server.pid');
+const PID_FILE = join(PID_DIR, 'ucr.pid');
 
 /**
  * Ensure PID directory exists

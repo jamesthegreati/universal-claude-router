@@ -66,7 +66,7 @@ ucr setup
 
 📋 Next Steps:
 1. Set API keys in environment variables
-2. Start the server: ucr-server ucr.config.json
+2. Start the server: ucr start -c ucr.config.json
 3. Configure Claude Code
 4. Test the connection
 ```
@@ -614,7 +614,7 @@ ucr providers test github-copilot
 ucr providers discover
 
 # 6. Start server
-ucr-server ucr.config.json
+ucr start -c ucr.config.json
 ```
 
 ### Managing Multiple Configs
@@ -622,7 +622,7 @@ ucr-server ucr.config.json
 ```bash
 # Development config
 ucr setup -o ucr.dev.json
-ucr-server ucr.dev.json
+ucr start -c ucr.dev.json
 
 # Production config
 ucr setup -o ucr.prod.json

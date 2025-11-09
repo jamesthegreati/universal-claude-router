@@ -2,7 +2,8 @@
 
 ## Overview
 
-This guide explains how to set up and authenticate the Universal Claude Router (UCR) with various AI model providers.
+This guide explains how to set up and authenticate the Universal Claude Router (UCR) with various AI
+model providers.
 
 ## Quick Start
 
@@ -15,6 +16,7 @@ ucr setup
 ```
 
 This will guide you through:
+
 - **Server Configuration**: Set host, port, CORS, and rate limiting
 - **Provider Selection**: Choose which providers to use
 - **Router Configuration**: Configure default providers and task-based routing
@@ -52,18 +54,21 @@ This will automatically start the server and launch Claude Code.
 ## Supported Providers
 
 ### Anthropic Claude (Recommended)
+
 - **Base URL**: `https://api.anthropic.com`
 - **Models**: claude-3.5-sonnet-20241022, claude-3.5-haiku-20241022, claude-3-opus-20240229
 - **Get API Key**: https://console.anthropic.com/account/keys
 - **Use Case**: Highest quality outputs, best for complex reasoning
 
 ### OpenAI
+
 - **Base URL**: `https://api.openai.com/v1`
 - **Models**: gpt-4-turbo, gpt-4o, gpt-4o-mini
 - **Get API Key**: https://platform.openai.com/api-keys
 - **Use Case**: Cost-effective, fast inference with GPT-4o
 
 ### Google Gemini
+
 - **Base URL**: `https://generativelanguage.googleapis.com`
 - **Models**: gemini-2.0-flash, gemini-2.0-flash-thinking-exp-1219, gemini-1.5-pro, gemini-1.5-flash
 - **Get API Key**: https://aistudio.google.com/app/apikey
@@ -71,29 +76,34 @@ This will automatically start the server and launch Claude Code.
 - **Custom Models**: Supports any Gemini model in the v1beta API
 
 ### DeepSeek
+
 - **Base URL**: `https://api.deepseek.com`
 - **Models**: deepseek-chat, deepseek-coder
 - **Get API Key**: https://platform.deepseek.com/api_keys
 - **Use Case**: Reasoning-focused models, cost-effective
 
 ### OpenRouter
+
 - **Base URL**: `https://openrouter.ai/api/v1`
 - **Models**: 200+ models from various providers
 - **Get API Key**: https://openrouter.ai/keys
 - **Use Case**: Access to multiple providers through one API
 
 ### Groq
+
 - **Base URL**: `https://api.groq.com`
 - **Models**: mixtral-8x7b-32768, llama2-70b-4096
 - **Get API Key**: https://console.groq.com/keys
 - **Use Case**: Ultra-fast inference for streaming
 
 ### GitHub Copilot
+
 - **Base URL**: `https://api.githubcopilot.com`
 - **Auth Type**: OAuth (Device Code Flow)
 - **Use Case**: Integrated with GitHub, no manual token needed
 
 ### Ollama (Local)
+
 - **Base URL**: `http://localhost:11434`
 - **Auth Type**: None
 - **Models**: llama2, mistral, neural-chat, etc.
@@ -132,11 +142,7 @@ This will automatically start the server and launch Claude Code.
       "defaultModel": "gemini-2.0-flash",
       "enabled": true,
       "priority": 7,
-      "models": [
-        "gemini-2.0-flash",
-        "gemini-1.5-pro",
-        "gemini-1.5-flash"
-      ]
+      "models": ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"]
     }
   ],
   "router": {
@@ -169,21 +175,25 @@ export GROQ_API_KEY="your-key-here"
 ## Authentication Commands
 
 ### Login
+
 ```bash
 ucr auth login [provider]
 ```
 
 ### Logout
+
 ```bash
 ucr auth logout [provider]
 ```
 
 ### List authenticated providers
+
 ```bash
 ucr auth list
 ```
 
 ### Refresh OAuth tokens
+
 ```bash
 ucr auth refresh [provider]
 ```
@@ -191,21 +201,25 @@ ucr auth refresh [provider]
 ## Using UCR with Claude Code
 
 ### 1. Set up UCR
+
 ```bash
 ucr setup
 ```
 
 ### 2. Authenticate with providers
+
 ```bash
 ucr auth login google
 ```
 
 ### 3. Launch Claude Code with UCR
+
 ```bash
 ucr code
 ```
 
 This will:
+
 - Start the UCR server automatically
 - Configure Claude Code to use UCR as the proxy
 - Route all requests through your configured providers
@@ -217,12 +231,13 @@ When Claude Code connects to UCR, you can use any model from your configured pro
 ```javascript
 // In Claude Code, specify the model
 const response = await claude.messages.create({
-  model: "gemini-2.0-flash",
-  messages: [{ role: "user", content: "Hello" }]
+  model: 'gemini-2.0-flash',
+  messages: [{ role: 'user', content: 'Hello' }],
 });
 ```
 
 UCR will automatically:
+
 - Route the request to Google Gemini
 - Transform the request to the correct API format
 - Transform the response back to Claude format
@@ -233,12 +248,14 @@ UCR will automatically:
 ### "Invalid Google response: no candidates"
 
 This error occurs when:
+
 1. **Safety Filter Blocked**: Google blocked the content for safety reasons
 2. **Invalid API Key**: The `GOOGLE_API_KEY` is incorrect or expired
 3. **Wrong Model Name**: The model name is not supported by the API
 4. **Rate Limited**: You've exceeded your API quota
 
 **Solutions**:
+
 - Check your API key in `ucr.config.json`
 - Verify the model name in the provider configuration
 - Try with a different provider
@@ -260,6 +277,7 @@ This error occurs when:
 ## Advanced Configuration
 
 ### Custom Router
+
 ```json
 {
   "router": {
@@ -269,6 +287,7 @@ This error occurs when:
 ```
 
 ### Task-Based Routing
+
 ```json
 {
   "router": {
@@ -314,6 +333,7 @@ For Vertex AI support, add metadata:
 ## Support
 
 For issues or questions:
+
 1. Check the [CLI Reference](./cli-reference.md)
 2. Review provider documentation
 3. Check GitHub issues

@@ -30,11 +30,12 @@ export class GoogleTransformer extends BaseTransformer {
         // Check if it ends with googleapis.com
         if (parts[parts.length - 2] === 'googleapis' && parts[parts.length - 1] === 'com') {
           // Check if any part contains 'aiplatform' or 'vertexai'
-          isVertexAI = parts.some(part => 
-            part === 'aiplatform' || 
-            part.endsWith('-aiplatform') || 
-            part === 'vertexai' || 
-            part.endsWith('-vertexai')
+          isVertexAI = parts.some(
+            (part) =>
+              part === 'aiplatform' ||
+              part.endsWith('-aiplatform') ||
+              part === 'vertexai' ||
+              part.endsWith('-vertexai'),
           );
         }
       }
@@ -119,18 +120,18 @@ export class GoogleTransformer extends BaseTransformer {
     if (!candidate) {
       // Provide detailed error information for debugging
       let errorDetails = 'Invalid Google response: no candidates';
-      
+
       if (response.promptFeedback) {
         errorDetails += ` - Prompt blocked: ${JSON.stringify(response.promptFeedback)}`;
       }
-      
+
       if (response.error) {
         errorDetails += ` - API Error: ${JSON.stringify(response.error)}`;
       }
-      
+
       // Log the full response for debugging
       console.error('Google API Response:', JSON.stringify(response, null, 2));
-      
+
       throw new Error(errorDetails);
     }
 
