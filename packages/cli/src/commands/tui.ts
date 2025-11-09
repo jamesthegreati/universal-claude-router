@@ -40,7 +40,9 @@ export const tuiCommand = new Command('tui')
 
       prompts.intro(
         chalk.bold.cyan('🧭 Universal Claude Router') +
-          chalk.dim(`  ${running ? chalk.green('● Running') : chalk.red('○ Stopped')}  ${serverUrl}`),
+          chalk.dim(
+            `  ${running ? chalk.green('● Running') : chalk.red('○ Stopped')}  ${serverUrl}`,
+          ),
       );
 
       const choice = await prompts.select({

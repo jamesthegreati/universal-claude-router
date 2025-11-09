@@ -140,7 +140,7 @@ ucr providers list
 ucr providers test anthropic
 
 # 5. Start server
-ucr-server ucr.config.json
+ucr start -c ucr.config.json
 ```
 
 ### Using with Environment Variables
@@ -250,7 +250,7 @@ Credentials are stored securely in:
 
 ```bash
 # 1. Start UCR server
-ucr-server ucr.config.json
+ucr start -c ucr.config.json
 
 # 2. Configure Claude Code
 export ANTHROPIC_API_URL="http://localhost:3000"

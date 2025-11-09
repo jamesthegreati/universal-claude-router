@@ -467,14 +467,14 @@ ucr providers test github-copilot
 ucr providers test anthropic
 
 # 6. Start server
-ucr-server ucr.config.json
+ucr start -c ucr.config.json
 ```
 
 ### Using with Claude Code
 
 ```bash
 # Start UCR
-ucr-server ucr.config.json
+ucr start -c ucr.config.json
 
 # Configure Claude Code
 export ANTHROPIC_API_URL="http://localhost:3000"

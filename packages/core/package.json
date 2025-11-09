@@ -7,9 +7,6 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "bin": {
-    "ucr-server": "./dist/bin/server.js"
-  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

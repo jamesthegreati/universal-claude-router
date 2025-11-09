@@ -2,26 +2,32 @@
 
 ## Overview
 
-This document summarizes the improvements made to the Universal Claude Router (UCR) to fix the Google API error, improve CLI consistency, and enhance the user experience.
+This document summarizes the improvements made to the Universal Claude Router (UCR) to fix the
+Google API error, improve CLI consistency, and enhance the user experience.
 
 ## Issues Fixed
 
 ### 1. "Invalid Google response: no candidates" Error ✅
 
-**Problem**: When using UCR with Claude Code and a custom Google Gemini model, the request would fail with a cryptic error message that didn't provide enough information to debug.
+**Problem**: When using UCR with Claude Code and a custom Google Gemini model, the request would
+fail with a cryptic error message that didn't provide enough information to debug.
 
-**Root Cause**: The Google transformer's error handling was too generic. It didn't capture or report:
+**Root Cause**: The Google transformer's error handling was too generic. It didn't capture or
+report:
+
 - Safety filter blocks
 - Invalid API responses
 - Prompt feedback information
 - Actual error details from the API
 
 **Solution**: Enhanced `packages/core/src/transformer/transformers/google.ts` with:
+
 - Detailed error messages that include prompt feedback
 - Logging of full API response for debugging
 - Better distinction between different error scenarios
 
 **Changes**:
+
 ```typescript
 // Before
 if (!candidate) {
@@ -31,15 +37,15 @@ if (!candidate) {
 // After
 if (!candidate) {
   let errorDetails = 'Invalid Google response: no candidates';
-  
+
   if (response.promptFeedback) {
     errorDetails += ` - Prompt blocked: ${JSON.stringify(response.promptFeedback)}`;
   }
-  
+
   if (response.error) {
     errorDetails += ` - API Error: ${JSON.stringify(response.error)}`;
   }
-  
+
   console.error('Google API Response:', JSON.stringify(response, null, 2));
   throw new Error(errorDetails);
 }
@@ -50,29 +56,34 @@ if (!candidate) {
 ### 2. Updated Provider Configurations ✅
 
 **Google Gemini** (`config/providers/google.json`):
+
 - Updated default model from `gemini-pro` to `gemini-2.0-flash`
 - Added support for latest models: gemini-2.0-flash, gemini-2.0-flash-thinking-exp-1219
 - Added metadata field for Vertex AI support
 - Now supports custom models through configuration
 
 **OpenAI** (`config/providers/openai.json`):
+
 - Updated base URL from `https://api.openai.com` to `https://api.openai.com/v1`
 - Updated default model from `gpt-4-turbo-preview` to `gpt-4-turbo`
 - Added latest models: gpt-4o, gpt-4o-mini
 - Added API metadata for version tracking
 
 **Anthropic** (already optimal):
+
 - Verified latest model versions
 - Confirmed API endpoints
 
 ### 3. Configuration Schema Enhancement ✅
 
 **Added metadata field** to `packages/core/src/config/schema.ts`:
+
 ```typescript
 metadata: z.record(z.unknown()).optional(),
 ```
 
 This enables:
+
 - Vertex AI project and location configuration
 - Provider-specific metadata
 - Future extensibility for custom provider options
@@ -84,6 +95,7 @@ This enables:
 **File**: `packages/cli/src/commands/setup.ts`
 
 **Improvements**:
+
 1. **Better Provider Ordering**: Providers now listed by recommendation:
    - Anthropic Claude (Recommended)
    - OpenAI
@@ -95,6 +107,7 @@ This enables:
    - Ollama
 
 2. **Improved Hints**: More descriptive hints for each provider
+
    ```
    Anthropic Claude - Claude 3.5 Sonnet - Recommended
    OpenAI - GPT-4o, GPT-4 Turbo
@@ -113,7 +126,9 @@ This enables:
 **File**: `packages/cli/src/commands/auth.ts`
 
 **Improvements**:
+
 1. **Provider-Specific Guidance**: Each provider now shows where to get API keys:
+
    ```
    Anthropic: https://console.anthropic.com/account/keys
    OpenAI: https://platform.openai.com/api-keys
@@ -156,22 +171,23 @@ ucr providers test google
 
 ### Verified and Updated Endpoints
 
-| Provider | Base URL | Status |
-|----------|----------|--------|
-| Anthropic | `https://api.anthropic.com` | ✅ Correct |
-| OpenAI | `https://api.openai.com/v1` | ✅ Updated |
-| Google | `https://generativelanguage.googleapis.com` | ✅ Correct |
-| DeepSeek | `https://api.deepseek.com` | ✅ Correct |
-| OpenRouter | `https://openrouter.ai/api/v1` | ✅ Correct |
-| Groq | `https://api.groq.com` | ✅ Correct |
-| GitHub Copilot | `https://api.githubcopilot.com` | ✅ Correct |
-| Ollama | `http://localhost:11434` | ✅ Correct |
+| Provider       | Base URL                                    | Status     |
+| -------------- | ------------------------------------------- | ---------- |
+| Anthropic      | `https://api.anthropic.com`                 | ✅ Correct |
+| OpenAI         | `https://api.openai.com/v1`                 | ✅ Updated |
+| Google         | `https://generativelanguage.googleapis.com` | ✅ Correct |
+| DeepSeek       | `https://api.deepseek.com`                  | ✅ Correct |
+| OpenRouter     | `https://openrouter.ai/api/v1`              | ✅ Correct |
+| Groq           | `https://api.groq.com`                      | ✅ Correct |
+| GitHub Copilot | `https://api.githubcopilot.com`             | ✅ Correct |
+| Ollama         | `http://localhost:11434`                    | ✅ Correct |
 
 ## Documentation
 
 ### New Documentation Added
 
 **`docs/SETUP_AND_AUTH_GUIDE.md`** (281 lines):
+
 - Quick start guide for UCR setup and authentication
 - Detailed provider documentation with API key sources
 - Configuration examples
@@ -185,6 +201,7 @@ ucr providers test google
 ### Manual Testing
 
 1. **Google Gemini Integration**:
+
    ```bash
    ucr setup  # Select Google
    ucr auth login google
@@ -222,6 +239,7 @@ ucr providers test google
 ## Backward Compatibility
 
 All changes are backward compatible:
+
 - Existing configurations will continue to work
 - Default models were updated to better options, but custom selections are preserved
 - New metadata field is optional
@@ -237,7 +255,9 @@ All changes are backward compatible:
 
 ## Summary
 
-These improvements address the immediate issue of Google API errors while establishing a foundation for better provider integration, more helpful user guidance, and consistent CLI workflows. The enhancements make UCR more reliable, user-friendly, and maintainable.
+These improvements address the immediate issue of Google API errors while establishing a foundation
+for better provider integration, more helpful user guidance, and consistent CLI workflows. The
+enhancements make UCR more reliable, user-friendly, and maintainable.
 
 ### Key Achievements
 
