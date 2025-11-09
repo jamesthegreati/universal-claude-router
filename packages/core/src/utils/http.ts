@@ -61,7 +61,7 @@ export async function makeHttpRequest<T = unknown>(
 
     // Read the response body as text first to avoid stream consumption issues
     const responseText = await response.body.text();
-    
+
     let responseBody: T;
     try {
       responseBody = JSON.parse(responseText) as T;

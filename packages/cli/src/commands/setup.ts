@@ -214,11 +214,7 @@ export const setupCommand = new Command('setup')
         defaultModel: 'gpt-4-turbo',
         enabled: true,
         priority: 9,
-        models: [
-          'gpt-4-turbo',
-          'gpt-4o',
-          'gpt-4o-mini',
-        ],
+        models: ['gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini'],
       },
       'github-copilot': {
         id: 'github-copilot',

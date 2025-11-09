@@ -3,7 +3,12 @@ import chalk from 'chalk';
 import { resolve } from 'path';
 import fs from 'fs/promises';
 import { loadConfig } from '@ucr/core';
-import { isServerRunning, getServerUrl, stopServerByPidFile, ensurePidDir } from '../utils/process.js';
+import {
+  isServerRunning,
+  getServerUrl,
+  stopServerByPidFile,
+  ensurePidDir,
+} from '../utils/process.js';
 
 export const stopCommand = new Command('stop')
   .description('Stop the Universal Claude Router server')
@@ -43,6 +48,10 @@ export const stopCommand = new Command('stop')
     }
 
     console.log(chalk.yellow('⚠ Server appears to be running but PID file was not found.'));
-    console.log(chalk.dim('You may need to stop it manually (e.g., kill the process listening on the configured port).'));
+    console.log(
+      chalk.dim(
+        'You may need to stop it manually (e.g., kill the process listening on the configured port).',
+      ),
+    );
     process.exit(1);
   });

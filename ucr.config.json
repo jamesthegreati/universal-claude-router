@@ -34,10 +34,7 @@
       "baseUrl": "https://api.githubcopilot.com",
       "authType": "oauth",
       "defaultModel": "gpt-4",
-      "models": [
-        "gpt-4",
-        "gpt-3.5-turbo"
-      ],
+      "models": ["gpt-4", "gpt-3.5-turbo"],
       "enabled": true,
       "priority": 8,
       "apiKey": ""
