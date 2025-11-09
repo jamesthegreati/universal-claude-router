@@ -4,8 +4,19 @@
   "baseUrl": "https://generativelanguage.googleapis.com",
   "apiKey": "${GOOGLE_API_KEY}",
   "authType": "apiKey",
-  "defaultModel": "gemini-pro",
+  "defaultModel": "gemini-2.0-flash",
   "enabled": true,
   "priority": 7,
-  "models": ["gemini-pro", "gemini-pro-vision"]
+  "models": [
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-thinking-exp-1219",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash",
+    "gemini-pro",
+    "gemini-pro-vision"
+  ],
+  "metadata": {
+    "apiVersion": "v1beta",
+    "description": "Google AI Studio API - supports latest Gemini models"
+  }
 }

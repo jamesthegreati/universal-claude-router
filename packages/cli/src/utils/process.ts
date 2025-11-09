@@ -1,11 +1,68 @@
 import { spawn, type ChildProcess } from 'child_process';
-import { resolve, dirname } from 'path';
+import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
+import os from 'os';
 import type { UCRConfig } from '@ucr/shared';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const PID_DIR = join(os.homedir(), '.ucr');
+const PID_FILE = join(PID_DIR, 'ucr-server.pid');
+
+/**
+ * Ensure PID directory exists
+ */
+export async function ensurePidDir(): Promise<void> {
+  try {
+    await fs.mkdir(PID_DIR, { recursive: true });
+  } catch {
+    // ignore
+  }
+}
+
+async function writePidFile(pid: number): Promise<void> {
+  await ensurePidDir();
+  await fs.writeFile(PID_FILE, String(pid), 'utf-8');
+}
+
+async function readPidFile(): Promise<number | null> {
+  try {
+    const content = await fs.readFile(PID_FILE, 'utf-8');
+    const pid = parseInt(content.trim(), 10);
+    return Number.isFinite(pid) ? pid : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function removePidFile(): Promise<void> {
+  try {
+    await fs.unlink(PID_FILE);
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Try to stop the server using the PID file.
+ * Returns true if a process was found and a signal was sent.
+ */
+export async function stopServerByPidFile(): Promise<boolean> {
+  const pid = await readPidFile();
+  if (!pid) return false;
+  try {
+    process.kill(pid, 'SIGTERM');
+  } catch {
+    // Process may not exist
+  }
+
+  // Wait briefly and remove PID file
+  await new Promise((r) => setTimeout(r, 300));
+  await removePidFile();
+  return true;
+}
 
 /**
  * Check if the UCR server is running
@@ -73,6 +130,11 @@ export async function startServerInBackground(configPath: string): Promise<Child
     detached: true,
     stdio: 'ignore',
   });
+
+  // Persist PID for later stopping
+  if (serverProcess.pid) {
+    await writePidFile(serverProcess.pid);
+  }
 
   // Unref the process so it can run independently
   serverProcess.unref();

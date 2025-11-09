@@ -626,7 +626,7 @@ ucr-server ucr.dev.json
 
 # Production config
 ucr setup -o ucr.prod.json
-ucr-server ucr.prod.json
+ucr start -c ucr.prod.json
 
 # Testing
 ucr config validate ucr.prod.json
@@ -724,8 +724,8 @@ Credentials are stored in `~/.ucr/credentials.json`:
 ### Aliases
 
 ```bash
-alias ucr-start='ucr-server ucr.config.json'
-alias ucr-dev='ucr-server ucr.dev.json'
+alias ucr-start='ucr start -c ucr.config.json'
+alias ucr-dev='ucr start -c ucr.dev.json'
 alias ucr-test='ucr providers test'
 ```
 

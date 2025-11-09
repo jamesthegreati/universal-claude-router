@@ -1,19 +1,23 @@
 {
   "id": "openai",
   "name": "OpenAI GPT",
-  "baseUrl": "https://api.openai.com",
+  "baseUrl": "https://api.openai.com/v1",
   "apiKey": "${OPENAI_API_KEY}",
   "authType": "bearerToken",
-  "defaultModel": "gpt-4-turbo-preview",
+  "defaultModel": "gpt-4-turbo",
   "models": [
-    "gpt-4-turbo-preview",
-    "gpt-4-0125-preview",
+    "gpt-4-turbo",
+    "gpt-4o",
+    "gpt-4o-mini",
     "gpt-4",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-16k"
+    "gpt-3.5-turbo"
   ],
   "enabled": true,
   "priority": 8,
   "timeout": 60000,
-  "maxRetries": 3
+  "maxRetries": 3,
+  "metadata": {
+    "apiVersion": "v1",
+    "description": "OpenAI API - supports GPT-4o and GPT-4 Turbo"
+  }
 }

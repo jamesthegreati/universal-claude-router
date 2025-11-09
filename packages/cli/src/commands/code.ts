@@ -166,7 +166,7 @@ export const codeCommand = new Command('code')
     claudeProcess.on('exit', (code) => {
       if (serverWasStarted) {
         console.log(chalk.dim('\n\nNote: UCR server is still running in the background'));
-        console.log(chalk.dim('To stop it, use: pkill -f "ucr-server"'));
+        console.log(chalk.dim('To stop it, run: ucr stop'));
       }
       process.exit(code || 0);
     });

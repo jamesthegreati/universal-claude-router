@@ -19,6 +19,7 @@ export const ProviderSchema = z.object({
   timeout: z.number().int().min(0).optional(),
   maxRetries: z.number().int().min(0).optional().default(3),
   headers: z.record(z.string()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const ServerConfigSchema = z.object({

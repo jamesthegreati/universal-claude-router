@@ -16,12 +16,16 @@ export class OpenAITransformer extends BaseTransformer {
     headers: Record<string, string>;
     body: unknown;
   }> {
-    const url = `${provider.baseUrl}/v1/chat/completions`;
+    // Support Google OpenAI-compatible endpoint which expects '/chat/completions' (no '/v1')
+    const useGooglePath = /\/openai\/?$/i.test(provider.baseUrl);
+    const url = `${provider.baseUrl}${useGooglePath ? '' : '/v1'}/chat/completions`;
 
-    const headers = {
-      Authorization: `Bearer ${provider.apiKey}`,
+    const headers: Record<string, string> = {
       ...provider.headers,
     };
+    if (provider.apiKey) {
+      headers.Authorization = `Bearer ${provider.apiKey}`;
+    }
 
     // Transform Claude messages to OpenAI format
     const messages: any[] = request.messages.map((msg) => ({

@@ -9,6 +9,8 @@ import { modelsCommand } from './commands/models.js';
 import { modelCommand } from './commands/model-selector.js';
 import { authCommand } from './commands/auth.js';
 import { configCommand } from './commands/config.js';
+import { stopCommand } from './commands/stop.js';
+import { tuiCommand } from './commands/tui.js';
 
 const program = new Command();
 
@@ -27,5 +29,7 @@ program.addCommand(modelsCommand);
 program.addCommand(modelCommand);
 program.addCommand(authCommand);
 program.addCommand(configCommand);
+program.addCommand(stopCommand);
+program.addCommand(tuiCommand);
 
 program.parse();

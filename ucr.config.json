@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0",
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "cors": {
+      "origin": "*",
+      "credentials": true
+    },
+    "rateLimit": {
+      "max": 100,
+      "timeWindow": "1m"
+    }
+  },
+  "logging": {
+    "level": "info",
+    "pretty": true
+  },
+  "providers": [
+    {
+      "id": "openai",
+      "name": "Google Gemini (OpenAI)",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "headers": {
+        "x-goog-api-key": "${GOOGLE_API_KEY}"
+      },
+      "defaultModel": "models/gemini-flash-latest",
+      "enabled": true,
+      "priority": 9
+    },
+    {
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
+      "baseUrl": "https://api.githubcopilot.com",
+      "authType": "oauth",
+      "defaultModel": "gpt-4",
+      "models": [
+        "gpt-4",
+        "gpt-3.5-turbo"
+      ],
+      "enabled": true,
+      "priority": 8,
+      "apiKey": ""
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "baseUrl": "https://openrouter.ai",
+      "apiKey": "${OPENROUTER_API_KEY}",
+      "authType": "bearerToken",
+      "defaultModel": "openrouter/polaris-alpha",
+      "enabled": true,
+      "priority": 5
+    },
+    {
+      "id": "google",
+      "name": "Google Gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com",
+      "defaultModel": "gemini-2.0-flash-exp",
+      "models": [
+        "gemini-2.0-flash-exp",
+        "gemini-1.5-pro",
+        "gemini-1.5-flash",
+        "gemini-pro"
+      ],
+      "enabled": true,
+      "priority": 7,
+      "apiKey": "${GOOGLE_API_KEY}"
+    }
+  ],
+  "router": {
+    "default": "openai",
+    "think": "openai",
+    "background": "openai",
+    "longContext": "openai"
+  },
+  "features": {
+    "costTracking": true,
+    "analytics": true,
+    "healthChecks": true
+  }
+}

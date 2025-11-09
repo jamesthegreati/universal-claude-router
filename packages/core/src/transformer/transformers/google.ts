@@ -117,7 +117,21 @@ export class GoogleTransformer extends BaseTransformer {
   async transformResponse(response: any, original: ClaudeCodeRequest): Promise<ClaudeCodeResponse> {
     const candidate = response.candidates?.[0];
     if (!candidate) {
-      throw new Error('Invalid Google response: no candidates');
+      // Provide detailed error information for debugging
+      let errorDetails = 'Invalid Google response: no candidates';
+      
+      if (response.promptFeedback) {
+        errorDetails += ` - Prompt blocked: ${JSON.stringify(response.promptFeedback)}`;
+      }
+      
+      if (response.error) {
+        errorDetails += ` - API Error: ${JSON.stringify(response.error)}`;
+      }
+      
+      // Log the full response for debugging
+      console.error('Google API Response:', JSON.stringify(response, null, 2));
+      
+      throw new Error(errorDetails);
     }
 
     const text = candidate.content?.parts?.map((part: any) => part.text || '').join('') || '';

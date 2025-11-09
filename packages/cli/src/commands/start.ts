@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs/promises';
 import { syncAuthToConfig } from '../utils/config-sync.js';
+import { ensurePidDir } from '../utils/process.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -78,11 +79,25 @@ export const startCommand = new Command('start')
       env.UCR_HOST = options.host;
     }
 
+    // Ensure PID directory exists
+    await ensurePidDir();
+
     // Start the server
     const serverProcess = spawn('node', [serverPath, configPath], {
       stdio: 'inherit',
       env,
     });
+
+    // Write PID file for lifecycle management
+    if (serverProcess.pid) {
+      try {
+        const fs = await import('fs/promises');
+        const os = await import('os');
+        const { join } = await import('path');
+        await fs.mkdir(join(os.homedir(), '.ucr'), { recursive: true });
+        await fs.writeFile(join(os.homedir(), '.ucr', 'ucr-server.pid'), String(serverProcess.pid), 'utf-8');
+      } catch {}
+    }
 
     spinner.stop();
 
