@@ -76,14 +76,14 @@ export const setupCommand = new Command('setup')
     const providers = await prompts.multiselect({
       message: 'Select providers to configure:',
       options: [
-        { value: 'anthropic', label: 'Anthropic Claude', hint: 'High quality, Claude 3.5 Sonnet' },
-        { value: 'openai', label: 'OpenAI', hint: 'GPT-4, GPT-3.5' },
-        { value: 'github-copilot', label: 'GitHub Copilot', hint: 'OAuth authentication required' },
-        { value: 'google', label: 'Google Gemini', hint: 'Gemini Pro, Ultra' },
-        { value: 'deepseek', label: 'DeepSeek', hint: 'Reasoning models' },
-        { value: 'openrouter', label: 'OpenRouter', hint: 'Access to 200+ models' },
+        { value: 'anthropic', label: 'Anthropic Claude', hint: 'Claude 3.5 Sonnet - Recommended' },
+        { value: 'openai', label: 'OpenAI', hint: 'GPT-4o, GPT-4 Turbo' },
+        { value: 'google', label: 'Google Gemini', hint: 'Gemini 2.0 Flash, 1.5 Pro' },
+        { value: 'deepseek', label: 'DeepSeek', hint: 'Reasoning and code models' },
+        { value: 'openrouter', label: 'OpenRouter', hint: '200+ models, cost optimization' },
         { value: 'groq', label: 'Groq', hint: 'Ultra-fast inference' },
-        { value: 'ollama', label: 'Ollama', hint: 'Local open-source models' },
+        { value: 'github-copilot', label: 'GitHub Copilot', hint: 'OAuth required' },
+        { value: 'ollama', label: 'Ollama', hint: 'Local models (no API key needed)' },
       ],
       required: true,
     });
@@ -208,12 +208,17 @@ export const setupCommand = new Command('setup')
       openai: {
         id: 'openai',
         name: 'OpenAI',
-        baseUrl: 'https://api.openai.com',
+        baseUrl: 'https://api.openai.com/v1',
         apiKey: '${OPENAI_API_KEY}',
         authType: 'bearerToken',
-        defaultModel: 'gpt-4',
+        defaultModel: 'gpt-4-turbo',
         enabled: true,
         priority: 9,
+        models: [
+          'gpt-4-turbo',
+          'gpt-4o',
+          'gpt-4o-mini',
+        ],
       },
       'github-copilot': {
         id: 'github-copilot',
@@ -231,9 +236,15 @@ export const setupCommand = new Command('setup')
         baseUrl: 'https://generativelanguage.googleapis.com',
         apiKey: '${GOOGLE_API_KEY}',
         authType: 'apiKey',
-        defaultModel: 'gemini-pro',
+        defaultModel: 'gemini-2.0-flash',
         enabled: true,
         priority: 7,
+        models: [
+          'gemini-2.0-flash',
+          'gemini-2.0-flash-thinking-exp-1219',
+          'gemini-1.5-pro',
+          'gemini-1.5-flash',
+        ],
       },
       deepseek: {
         id: 'deepseek',
@@ -307,7 +318,7 @@ export const setupCommand = new Command('setup')
       }
 
       console.log(chalk.cyan('\n2. Start the server:'));
-      console.log(chalk.dim(`   ucr-server ${configPath}`));
+      console.log(chalk.dim(`   ucr start -c ${configPath}`));
 
       console.log(chalk.cyan('\n3. Configure Claude Code:'));
       console.log(chalk.dim(`   export ANTHROPIC_API_URL="http://localhost:${serverGroup.port}"`));

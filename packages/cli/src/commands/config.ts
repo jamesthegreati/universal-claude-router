@@ -156,7 +156,7 @@ configCommand
 
       console.log(chalk.bold('\nNext steps:'));
       console.log('1. Set environment variables for API keys');
-      console.log(`2. Run: ${chalk.cyan(`ucr-server ${options.output}`)}`);
+      console.log(`2. Run: ${chalk.cyan(`ucr start -c ${options.output}`)}`);
     } catch (error) {
       prompts.outro(chalk.red(`✗ Failed to save config: ${error}`));
       process.exit(1);

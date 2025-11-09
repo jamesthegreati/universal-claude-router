@@ -183,10 +183,25 @@ async function loginGitHubCopilot(): Promise<void> {
 }
 
 async function loginApiKey(provider: string): Promise<void> {
+  // Show provider-specific guidance
+  const guidance: Record<string, string> = {
+    anthropic: 'Get your key from https://console.anthropic.com/account/keys',
+    openai: 'Get your key from https://platform.openai.com/api-keys',
+    google: 'Get your key from https://aistudio.google.com/app/apikey',
+    deepseek: 'Get your key from https://platform.deepseek.com/api_keys',
+    openrouter: 'Get your key from https://openrouter.ai/keys',
+    groq: 'Get your key from https://console.groq.com/keys',
+  };
+
+  if (guidance[provider]) {
+    console.log(chalk.dim(`\n${guidance[provider]}\n`));
+  }
+
   const apiKey = await prompts.password({
     message: `Enter API key for ${provider}:`,
     validate: (value) => {
       if (!value) return 'API key is required';
+      if (value.length < 10) return 'API key seems too short';
       return undefined;
     },
   });

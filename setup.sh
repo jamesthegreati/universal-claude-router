@@ -10,7 +10,7 @@ echo "🚀 Setting up Universal Claude Router..."
 # Function to kill all UCR processes
 kill_ucr_processes() {
     echo "🛑 Stopping all UCR processes..."
-    pkill -f "ucr-server" 2>/dev/null || true
+    ucr stop || true 2>/dev/null || true
     pkill -f "ucr" 2>/dev/null || true
     pkill -f "node.*ucr" 2>/dev/null || true
     sleep 2
