@@ -1,10 +1,11 @@
 import { Command } from 'commander';
-import { resolve, dirname } from 'path';
+import { resolve, dirname, join } from 'path';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs/promises';
+import os from 'os';
 import { syncAuthToConfig } from '../utils/config-sync.js';
 import { ensurePidDir } from '../utils/process.js';
 
@@ -91,15 +92,8 @@ export const startCommand = new Command('start')
     // Write PID file for lifecycle management
     if (serverProcess.pid) {
       try {
-        const fs = await import('fs/promises');
-        const os = await import('os');
-        const { join } = await import('path');
         await fs.mkdir(join(os.homedir(), '.ucr'), { recursive: true });
-        await fs.writeFile(
-          join(os.homedir(), '.ucr', 'ucr.pid'),
-          String(serverProcess.pid),
-          'utf-8',
-        );
+        await fs.writeFile(join(os.homedir(), '.ucr', 'ucr.pid'), String(serverProcess.pid), 'utf-8');
       } catch {}
     }
 

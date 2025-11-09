@@ -16,27 +16,27 @@ export const stopCommand = new Command('stop')
   .action(async (options) => {
     const configPath = resolve(process.cwd(), options.config);
 
-    // Check if config exists
-    let config: any;
-    try {
-      await fs.access(configPath);
-      config = await loadConfig(configPath);
-    } catch {
-      console.log(chalk.red('❌ Configuration file not found'));
-      console.log(chalk.dim(`Looking for: ${configPath}`));
-      process.exit(1);
-    }
-
-    // First, try graceful stop via PID file
+    // First, try graceful stop via PID file without requiring config
     try {
       await ensurePidDir();
       const stopped = await stopServerByPidFile();
       if (stopped) {
         console.log(chalk.green('✓ UCR server stopped'));
-        return;
+        process.exit(0);
       }
-    } catch (err) {
-      // continue to check running
+    } catch {
+      // continue to check running via health endpoint
+    }
+
+    // Load config if available to provide better messaging and health check
+    let config: any = null;
+    try {
+      await fs.access(configPath);
+      config = await loadConfig(configPath);
+    } catch {
+      console.log(chalk.yellow('⚠ No PID file found and configuration file is missing.'));
+      console.log(chalk.dim('The server is likely not running.'));
+      process.exit(0);
     }
 
     const running = await isServerRunning(config);
@@ -44,7 +44,7 @@ export const stopCommand = new Command('stop')
       console.log(chalk.yellow('⚠ UCR server is not running'));
       const serverUrl = getServerUrl(config);
       console.log(chalk.dim(`Would run on: ${serverUrl}`));
-      return;
+      process.exit(0);
     }
 
     console.log(chalk.yellow('⚠ Server appears to be running but PID file was not found.'));

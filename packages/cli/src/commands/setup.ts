@@ -78,7 +78,8 @@ export const setupCommand = new Command('setup')
       options: [
         { value: 'anthropic', label: 'Anthropic Claude', hint: 'Claude 3.5 Sonnet - Recommended' },
         { value: 'openai', label: 'OpenAI', hint: 'GPT-4o, GPT-4 Turbo' },
-        { value: 'google', label: 'Google Gemini', hint: 'Gemini 2.0 Flash, 1.5 Pro' },
+        { value: 'google', label: 'Google Gemini', hint: 'Direct Gemini API (v1beta)' },
+        { value: 'google-openai', label: 'Google Gemini (OpenAI-compatible)', hint: 'Use OpenAI-compatible endpoint' },
         { value: 'deepseek', label: 'DeepSeek', hint: 'Reasoning and code models' },
         { value: 'openrouter', label: 'OpenRouter', hint: '200+ models, cost optimization' },
         { value: 'groq', label: 'Groq', hint: 'Ultra-fast inference' },
@@ -220,7 +221,6 @@ export const setupCommand = new Command('setup')
         id: 'github-copilot',
         name: 'GitHub Copilot',
         baseUrl: 'https://api.githubcopilot.com',
-        apiKey: '${GITHUB_COPILOT_TOKEN}',
         authType: 'oauth',
         defaultModel: 'gpt-4',
         enabled: true,
@@ -242,6 +242,15 @@ export const setupCommand = new Command('setup')
           'gemini-1.5-flash',
         ],
       },
+      'google-openai': {
+        id: 'google-openai',
+        name: 'Google Gemini (OpenAI)',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+        headers: { 'x-goog-api-key': '${GOOGLE_API_KEY}' },
+        defaultModel: 'models/gemini-flash-latest',
+        enabled: true,
+        priority: 8,
+      },
       deepseek: {
         id: 'deepseek',
         name: 'DeepSeek',
@@ -258,7 +267,7 @@ export const setupCommand = new Command('setup')
         baseUrl: 'https://openrouter.ai',
         apiKey: '${OPENROUTER_API_KEY}',
         authType: 'bearerToken',
-        defaultModel: 'anthropic/claude-3.5-sonnet',
+        defaultModel: 'openrouter/polaris-alpha',
         enabled: true,
         priority: 5,
       },
@@ -305,9 +314,18 @@ export const setupCommand = new Command('setup')
       console.log(chalk.cyan('1. Set API keys in environment variables:'));
       for (const provider of providers as string[]) {
         if (provider !== 'ollama') {
-          const envVar = providerTemplates[provider]?.apiKey?.match(/\$\{(.+?)\}/)?.[1];
-          if (envVar) {
-            // Log the environment variable NAME only (not the actual key value)
+          let envVars: string[] = [];
+          const t = providerTemplates[provider];
+          const apiKeyMatch = t?.apiKey?.match(/\$\{(.+?)\}/)?.[1];
+          if (apiKeyMatch) envVars.push(apiKeyMatch);
+          if (t?.headers && typeof t.headers === 'object') {
+            for (const v of Object.values(t.headers)) {
+              const m = typeof v === 'string' ? v.match(/\$\{(.+?)\}/) : null;
+              if (m?.[1]) envVars.push(m[1]);
+            }
+          }
+          envVars = Array.from(new Set(envVars));
+          for (const envVar of envVars) {
             console.log(chalk.dim(`   export ${envVar}="your-api-key"`));
           }
         }
