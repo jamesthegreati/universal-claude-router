@@ -79,7 +79,11 @@ export const setupCommand = new Command('setup')
         { value: 'anthropic', label: 'Anthropic Claude', hint: 'Claude 3.5 Sonnet - Recommended' },
         { value: 'openai', label: 'OpenAI', hint: 'GPT-4o, GPT-4 Turbo' },
         { value: 'google', label: 'Google Gemini', hint: 'Direct Gemini API (v1beta)' },
-        { value: 'google-openai', label: 'Google Gemini (OpenAI-compatible)', hint: 'Use OpenAI-compatible endpoint' },
+        {
+          value: 'google-openai',
+          label: 'Google Gemini (OpenAI-compatible)',
+          hint: 'Use OpenAI-compatible endpoint',
+        },
         { value: 'deepseek', label: 'DeepSeek', hint: 'Reasoning and code models' },
         { value: 'openrouter', label: 'OpenRouter', hint: '200+ models, cost optimization' },
         { value: 'groq', label: 'Groq', hint: 'Ultra-fast inference' },

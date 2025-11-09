@@ -19,14 +19,16 @@ export class GitHubCopilotTransformer extends BaseTransformer {
   }> {
     const url = `${provider.baseUrl}/chat/completions`;
 
-    const headers = {
-      Authorization: `Bearer ${provider.apiKey}`,
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Editor-Version': provider.metadata?.editorVersion || 'vscode/1.85.0',
       'Editor-Plugin-Version': provider.metadata?.pluginVersion || 'copilot-chat/0.11.1',
       'User-Agent': provider.metadata?.userAgent || 'GitHubCopilotChat/0.11.1',
       ...provider.headers,
     };
+    if (provider.apiKey) {
+      headers.Authorization = `Bearer ${provider.apiKey}`;
+    }
 
     // Transform Claude messages to OpenAI format
     const messages: any[] = request.messages.map((msg) => ({

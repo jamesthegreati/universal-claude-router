@@ -93,7 +93,11 @@ export const startCommand = new Command('start')
     if (serverProcess.pid) {
       try {
         await fs.mkdir(join(os.homedir(), '.ucr'), { recursive: true });
-        await fs.writeFile(join(os.homedir(), '.ucr', 'ucr.pid'), String(serverProcess.pid), 'utf-8');
+        await fs.writeFile(
+          join(os.homedir(), '.ucr', 'ucr.pid'),
+          String(serverProcess.pid),
+          'utf-8',
+        );
       } catch {}
     }
 
